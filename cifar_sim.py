@@ -12,6 +12,10 @@ def load_data():
         return dict
 
     filename = '/home/vision/smb-datasets/cifar-10-python/cifar-10-batches-py/data_batch_1'
+    """
+    cifar 10 
+    https://www.cs.toronto.edu/~kriz/cifar.html 
+    """
     data = unpickle(filename)
     data = data['data']    
     data = np.reshape(data, (-1,3,32,32));
@@ -40,7 +44,7 @@ def compute_features(model, data):
 def simsearch(query_feat, data_feat):
     query_feat = query_feat / np.linalg.norm(query_feat, ord = 2, keepdims = True)
     data_feat = data_feat / np.linalg.norm(data_feat, ord = 2, keepdims = True)
-    l2 = 2- np.sqrt(np.matmul(data_feat, np.transpose(query_feat)))
+    #l2 = 2- np.sqrt(np.matmul(data_feat, np.transpose(query_feat)))
     cosine = np.matmul(data_feat, np.transpose(query_feat))
     print(cosine)
     sorted_idx = np.argsort(-cosine, axis = 0)
@@ -62,14 +66,13 @@ if __name__ == '__main__' :
     data = load_data()
     model = load_model(configfile)
     print('computing features')
-    feats = compute_features(model, data)
-    print(feats)
-    print(feats.shape)
-    print('simsearch')    
+    data_feats = compute_features(model, data)
+    print(data_feats)
+    print(data_feats.shape)   
     queries = data[np.random.choice(data.shape[0], 10), :, :, :]
     query_feats =  compute_features(model, queries)
     print(query_feats)
-    idx_result = simsearch(query_feats, feats)
-    idx = 9    
+    idx_result = simsearch(query_feats, data_feats)
+    idx = 0    
     plot_result(idx, idx_result[:,idx], queries, data)
         

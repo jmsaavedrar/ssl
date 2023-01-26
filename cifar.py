@@ -2,7 +2,6 @@
     SimSiam adapted from https://keras.io/examples/vision/simsiam/
 """
 import tensorflow as tf
-import matplotlib.pyplot as plt
 import improc.augmentation as aug
 import configparser
 import models.simsiam as simsiam  
@@ -73,12 +72,13 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 )
 
 # Compile model and start training.
-simsiam = simsiam.SimSiam(config_data, config_model)
-simsiam.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.6))
+simsiam_model = simsiam.SimSiam(config_data, config_model)
+simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.6))
 saved_to = os.path.join("saved_model","saved-model")
-simsiam.load_weights(saved_to)
-print('load ok')
-#history = simsiam.fit(ssl_ds, epochs=config_model.getint('EPOCHS'), callbacks=[early_stopping])
+#simsiam.load_weights(saved_to)
+history = simsiam_model.fit(ssl_ds, 
+                      epochs=config_model.getint('EPOCHS'), 
+                      callbacks=[early_stopping])
 
 #predicting
 
@@ -90,12 +90,8 @@ print('load ok')
 #saving model
 # print('saving model')
 # saved_to = os.path.join("saved_model","saved-model")
-#simsiam.save_weights(saved_to)
-#print("model saved to {}".format(saved_to))        
-my_model= simsiam.encoder
-print(x_test[0,:,:,:].shape)
-x = my_model.predict(x_test[0:1,:,:,:])
-print(x)
+simsiam_model.save_weights(saved_to)
+print("model saved to {}".format(saved_to))        
 #)
 #plt.plot(history.history["loss"])
 #plt.grid()

@@ -181,7 +181,7 @@ class ResNetBlock(tf.keras.layers.Layer):
 
 class ResNetBackbone(tf.keras.Model):
     
-    def __init__(self, block_sizes, filters, use_bottleneck = False, se_factor = 0, **kwargs) :
+    def __init__(self, block_sizes,  filters, use_bottleneck = False, se_factor = 0, **kwargs) :
         super(ResNetBackbone, self).__init__(**kwargs)
         self.conv_0 = tf.keras.layers.Conv2D(64, (7,7), strides = 2, padding = 'same', 
                                              kernel_initializer = 'he_normal',
