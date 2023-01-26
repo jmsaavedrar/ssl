@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import improc.augmentation as aug
 import configparser
 import models.simsiam as simsiam  
-
+import os
 
 
 AUTO = tf.data.AUTOTUNE
@@ -75,10 +75,29 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 # Compile model and start training.
 simsiam = simsiam.SimSiam(config_data, config_model)
 simsiam.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.6))
-history = simsiam.fit(ssl_ds, epochs=config_model.getint('EPOCHS'), callbacks=[early_stopping])
+saved_to = os.path.join("saved_model","saved-model")
+simsiam.load_weights(saved_to)
+print('load ok')
+#history = simsiam.fit(ssl_ds, epochs=config_model.getint('EPOCHS'), callbacks=[early_stopping])
 
+#predicting
+
+
+#hisitory = simsiam.evaluate(ssl_ds)
 # Visualize the training progress of the model.
-plt.plot(history.history["loss"])
-plt.grid()
-plt.title("Negative Cosine Similairty")
-plt.show()
+# Extract the backbone ResNet20.
+
+#saving model
+# print('saving model')
+# saved_to = os.path.join("saved_model","saved-model")
+#simsiam.save_weights(saved_to)
+#print("model saved to {}".format(saved_to))        
+my_model= simsiam.encoder
+print(x_test[0,:,:,:].shape)
+x = my_model.predict(x_test[0:1,:,:,:])
+print(x)
+#)
+#plt.plot(history.history["loss"])
+#plt.grid()
+#plt.title("Negative Cosine Similairty")
+#plt.show()

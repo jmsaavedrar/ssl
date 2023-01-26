@@ -14,11 +14,13 @@ class SimSiam(tf.keras.Model):
         self.predictor = self.get_predictor()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
         
+        
+        
     def get_encoder(self):
-        # Input and backbone.        
-        inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, 3))
+        # Input and backbone.
+        inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, 3))                
         x = inputs / 127.5 - 1
-        bkbone = resnet.ResNet([2,2], [64,128], 10)
+        bkbone = resnet.ResNetBackbone([2,2], [64,128])
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.Dense(
@@ -28,12 +30,14 @@ class SimSiam(tf.keras.Model):
         )(x)
         x = tf.keras.layers.BatchNormalization()(x)
         x = tf.keras.layers.ReLU()(x)
+        x = tf.keras.layers.Flatten()(x)        
         x = tf.keras.layers.Dense(
             self.PROJECT_DIM, 
             use_bias=False, 
             kernel_regularizer=tf.keras.regularizers.l2(self.WEIGHT_DECAY)
         )(x)
         outputs = tf.keras.layers.BatchNormalization()(x)
+        
         return tf.keras.Model(inputs, outputs, name="encoder")
 
 
