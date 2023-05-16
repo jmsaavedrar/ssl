@@ -38,6 +38,7 @@ def load_model(configfile):
     return model
 
 def compute_features(model, data):
+    data = data / 127.5 - 1
     feats = model.predict(data)
     return feats
 
