@@ -1,8 +1,9 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import models.simsiam as simsiam
 import os 
 import configparser
+import skimage.io as io
 
 def load_data():
     def unpickle(file):
@@ -11,7 +12,7 @@ def load_data():
             dict = pickle.load(fo, encoding='latin1')
         return dict
 
-    filename = '/home/vision/smb-datasets/cifar-10-python/cifar-10-batches-py/data_batch_1'
+    filename = './cifar/cifar-10-batches-py/data_batch_1'
     """
     cifar 10 
     https://www.cs.toronto.edu/~kriz/cifar.html 
@@ -50,7 +51,7 @@ def simsearch(query_feat, data_feat):
     sorted_idx = np.argsort(-cosine, axis = 0)
     return sorted_idx
     
-def plot_result(idx, results, queries, data ):
+def get_result_image(idx, results, queries, data ):
     w = 32
     h = 32
     n = 5
@@ -58,8 +59,7 @@ def plot_result(idx, results, queries, data ):
     image[0:h, 0:w, :] = queries[idx, :, : ,:]
     for i in np.arange(1,n+1) :
         image[0:h, w*i:w*(i+1), :] = data[results[i], :, : ,:]
-    plt.imshow(image)
-    plt.show()
+    return image    
     
 if __name__ == '__main__' :
     configfile = 'example.ini' 
@@ -74,5 +74,10 @@ if __name__ == '__main__' :
     print(query_feats)
     idx_result = simsearch(query_feats, data_feats)
     idx = 0    
-    plot_result(idx, idx_result[:,idx], queries, data)
+    rimage = get_result_image(idx, idx_result[:,idx], queries, data)
+    fname = 'result_{}.png'.format(idx)
+    io.imsave(fname, rimage)
+    print('result saved at {}'.format(fname))
+    
+    
         
