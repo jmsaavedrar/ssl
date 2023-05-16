@@ -21,7 +21,7 @@ class SimSiam(tf.keras.Model):
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, 3))                
         x = inputs / 127.5 - 1
         #bkbone = resnet.ResNetBackbone([2,2], [64,128])
-        bkbone = simple.BackBone()
+        bkbone = simple.Backbone()
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.Dense(

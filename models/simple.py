@@ -4,9 +4,9 @@ A simple cnn used for training mnist.
 import tensorflow as tf
 
 
-class BackBone(tf.keras.Model):
+class Backbone(tf.keras.Model):
     def __init__(self):
-        super(SimpleModel, self).__init__()        
+        super(Backbone, self).__init__()        
         self.conv_1 = tf.keras.layers.Conv2D(32, (3,3), padding = 'same',  kernel_initializer = 'he_normal', name = 'conv1')
         self.max_pool = tf.keras.layers.MaxPool2D((3,3), strides = 2, padding = 'same')
         self.relu = tf.keras.layers.ReLU();        
