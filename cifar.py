@@ -2,7 +2,7 @@
     SimSiam adapted from https://keras.io/examples/vision/simsiam/
 """
 import tensorflow as tf
-import improc.augmentation as aug
+#import improc.augmentation as aug
 import configparser
 import models.simsiam as simsiam  
 import os
