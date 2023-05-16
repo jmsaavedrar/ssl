@@ -40,8 +40,7 @@ class Backbone(tf.keras.Model):
         x = self.max_pool(x)  #4X4
         #last block        
         x = tf.keras.layers.Flatten()(x) 
-        x = self.fc1(x)  
-        x = self.bn_fc_1(x) 
+        x = self.fc1(x)           
                 
         return x
         
