@@ -76,6 +76,7 @@ if __name__ == '__main__' :
     idx = 0    
     rimage = get_result_image(idx, idx_result[:,idx], queries, data)
     fname = 'result_{}.png'.format(idx)
+    fname = os.path.join('results',fname)
     io.imsave(fname, rimage)
     print('result saved at {}'.format(fname))
     
