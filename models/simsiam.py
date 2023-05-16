@@ -1,4 +1,5 @@
 import models.resnet as resnet
+import models.simple as simple
 import tensorflow as tf
 
 
@@ -14,13 +15,13 @@ class SimSiam(tf.keras.Model):
         self.predictor = self.get_predictor()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
         
-        
-        
+                
     def get_encoder(self):
         # Input and backbone.
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, 3))                
         x = inputs / 127.5 - 1
-        bkbone = resnet.ResNetBackbone([2,2], [64,128])
+        #bkbone = resnet.ResNetBackbone([2,2], [64,128])
+        bkbone = simple.BackBone()
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.Dense(
