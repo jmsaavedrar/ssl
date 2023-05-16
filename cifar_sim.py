@@ -69,16 +69,17 @@ if __name__ == '__main__' :
     data_feats = compute_features(model, data)
     print(data_feats)
     print(data_feats.shape)   
-    queries = data[np.random.choice(data.shape[0], 10), :, :, :]
+    n_queries = 10
+    queries = data[np.random.choice(data.shape[0], n_queries), :, :, :]
     query_feats =  compute_features(model, queries)
     print(query_feats)
     idx_result = simsearch(query_feats, data_feats)
-    idx = 0    
-    rimage = get_result_image(idx, idx_result[:,idx], queries, data)
-    fname = 'result_{}.png'.format(idx)
-    fname = os.path.join('results',fname)
-    io.imsave(fname, rimage)
-    print('result saved at {}'.format(fname))
+    for idx_q in np.arange(n_queries) :    
+        rimage = get_result_image(idx_q, idx_result[:,idx_q], queries, data)
+        fname = 'result_{}.png'.format(idx_q)
+        fname = os.path.join('results',fname)
+        io.imsave(fname, rimage)
+        print('result saved at {}'.format(fname))
     
     
         
