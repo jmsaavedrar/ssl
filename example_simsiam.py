@@ -34,7 +34,7 @@ config_data = config['DATA']
 daug = aug.DataAugmentation(config_data)
  
 #loading dataset example cifar
-dataset = config_model.get('DATASET')
+dataset = config_data.get('DATASET')
 assert (dataset in ['CIFAR', 'MNIST']), 'dataset is not available'
 if  dataset == 'CIFAR' :
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
