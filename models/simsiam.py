@@ -1,7 +1,8 @@
 import models.resnet as resnet
 import models.simple as simple
 import tensorflow as tf
-
+import configparser
+import os
 
 class SimSiam(tf.keras.Model):
     def __init__(self, config_data, config_model):
@@ -54,7 +55,7 @@ class SimSiam(tf.keras.Model):
                 ),
                 tf.keras.layers.ReLU(),
                 tf.keras.layers.BatchNormalization(),
-                tf.keras.layers.Dense(self.PROJECT_DIM),
+                tf.keras.layers.Dense(self.PROJECT_DIM ),
             ],
             name="predictor",
         )
@@ -98,3 +99,14 @@ class SimSiam(tf.keras.Model):
         # Monitor loss.
         self.loss_tracker.update_state(loss)
         return {"loss": self.loss_tracker.result()}
+    
+if __name__ == '__main__' :    
+    config = configparser.ConfigParser()
+    config.read('../example.ini')
+    config_model = config['SIMSIAM']
+    config_data = config['DATA']
+    simsiam = SimSiam(config_data, config_model)    
+    saved_to = os.path.join("..","saved_model","saved-model")
+    simsiam.load_weights(saved_to)
+    for v in simsiam.encoder.trainable_variables :
+        print(v.numpy)
