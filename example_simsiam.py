@@ -40,6 +40,7 @@ if  dataset == 'CIFAR' :
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 else :
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()    
+    x_train = np.expand_dims(x_train, axis = -1) 
 
 #data one
 #SEED is used to keep the same randomization in both ds_one and ds_two
