@@ -6,7 +6,7 @@ import improc.augmentation as aug
 import configparser
 import models.simsiam as simsiam  
 import os
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize_data(ds_1, ds_2) :    
