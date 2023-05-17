@@ -1,4 +1,6 @@
 #import models.resnet as resnet
+import sys
+sys.path.append(r'../')
 import models.simple as simple
 import tensorflow as tf
 import configparser
