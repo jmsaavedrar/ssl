@@ -29,5 +29,6 @@ def load_model(self):
 
 
 if __name__ == '__main__' :
-    ssearch = SSearch()
+    
+    ssearch = SSearch('example.ini')
     ssearch.load_model()
