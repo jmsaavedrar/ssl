@@ -48,7 +48,7 @@ if __name__ == '__main__' :
     ssearch = SSearch('example.ini')
     ssearch.load_model()
     ssearch.compute_features()
-    idxs = np.random.randint(1000, 10)
+    idxs = np.random.randint(1000, size = 10)
     for idx in idxs :
         rimage =  ssearch.visualize(idx)
         fname = 'result_2_{}.png'.format(idx)
