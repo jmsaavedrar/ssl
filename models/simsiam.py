@@ -102,11 +102,11 @@ class SimSiam(tf.keras.Model):
     
 if __name__ == '__main__' :    
     config = configparser.ConfigParser()
-    config.read('../example.ini')
+    config.read('example.ini')
     config_model = config['SIMSIAM']
     config_data = config['DATA']
     simsiam = SimSiam(config_data, config_model)    
-    saved_to = os.path.join("..","saved_model","saved-model")
+    saved_to = os.path.join("saved_model","saved-model")
     simsiam.load_weights(saved_to)
     for v in simsiam.encoder.trainable_variables :
         print(v.numpy)
