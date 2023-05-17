@@ -17,10 +17,10 @@ class SSearch():
         self.model= simsiam_model.encoder
                 
 
-def load_model(self):
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
-    self.data = x_test
-    print(self.data.shape)
+    def load_model(self):
+        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+        self.data = x_test
+        print(self.data.shape)
     
 
 # def compute_features(model, data):
