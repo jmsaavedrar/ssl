@@ -36,10 +36,10 @@ class SSearch():
         size = self.data.shape[1]
         
         n = 10
-        image = np.ones((size, n*size), dtype = np.uint8)*255                        
+        image = np.ones((size, n*size, 3), dtype = np.uint8)*255                        
         i = 0
         for i , pos in enumerate(self.sorted_pos[idx, :n]) :
-            image[:, i * size:(i + 1) * size] = self.data[pos, : , : ]
+            image[:, i * size:(i + 1) * size, :] = self.data[pos, : , :, : ]
                
         return image       
          
