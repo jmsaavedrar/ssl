@@ -25,7 +25,7 @@ class SSearch():
         if dataset == 'MNIST' : 
             (_, _), (x_test, _) = tf.keras.datasets.mnist.load_data()
             x_test = np.expand_dims(x_test, axis = -1)
-            np.concatenate((x_test, x_test, x_test), axis = 3)
+            x_test = np.concatenate((x_test, x_test, x_test), axis = 3)
             
         idx = np.random.permutation(x_test.shape[0])
         self.data = x_test[idx[:1000], :, :, :]        
