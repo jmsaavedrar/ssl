@@ -1,7 +1,5 @@
 #import models.resnet as resnet
-import sys
-sys.path.append(r'../models')
-import models.simple as simple
+import simple as simple
 import tensorflow as tf
 import configparser
 import os
