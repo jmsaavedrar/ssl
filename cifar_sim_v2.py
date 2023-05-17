@@ -28,6 +28,6 @@ def load_model(self):
 #     return feats
 
 
-if __name__ == '__name__' :
+if __name__ == '__main__' :
     ssearch = SSearch()
     ssearch.load_model()
