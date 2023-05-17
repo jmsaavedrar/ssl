@@ -1,4 +1,4 @@
-import models.resnet as resnet
+#import models.resnet as resnet
 import models.simple as simple
 import tensorflow as tf
 import configparser
