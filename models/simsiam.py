@@ -10,7 +10,10 @@ class SimSiam(tf.keras.Model):
         self.CROP_SIZE = config_data.getint('CROP_SIZE')
         self.PROJECT_DIM =  config_model.getint('PROJECT_DIM')
         self.WEIGHT_DECAY = config_model.getfloat('WEIGHT_DECAY')
-        self.LATENT_DIM  = config_model.getint('LATENT_DIM')
+        self.LATENT_DIM  = config_model.getint('LATENT_DIM')        
+        self.CHANNELS = 3
+        if config_model.getint('DATASET') == 'MNIST' :
+            self.CHANNELS = 1
         print('{} {} {} {}'.format(self.CROP_SIZE, self.PROJECT_DIM, self.WEIGHT_DECAY, self.LATENT_DIM))
         self.encoder = self.get_encoder()
         self.predictor = self.get_predictor()
@@ -19,7 +22,7 @@ class SimSiam(tf.keras.Model):
                 
     def get_encoder(self):
         # Input and backbone.
-        inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, 3))                
+        inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
         x = inputs / 127.5 - 1
         #bkbone = resnet.ResNetBackbone([2,2], [64,128])
         bkbone = simple.Backbone()
@@ -105,8 +108,7 @@ if __name__ == '__main__' :
     config.read('example.ini')
     config_model = config['SIMSIAM']
     config_data = config['DATA']
-    simsiam = SimSiam(config_data, config_model)    
-    saved_to = os.path.join("saved_model","saved-model")
-    simsiam.load_weights(saved_to)
+    simsiam = SimSiam(config_data, config_model)        
+    simsiam.load_weights(config_data.get('MODEL_NAME'))
     for v in simsiam.encoder.trainable_variables :
         print(v.numpy)

@@ -12,14 +12,20 @@ class SSearch():
         config.read(configfile)
         self.config_model = config['SIMSIAM']
         self.config_data = config['DATA']    
-        simsiam_model = simsiam.SimSiam(self.config_data, self.config_model)
-        saved_to = os.path.join("saved_model","saved-model")
-        simsiam_model.load_weights(saved_to)
+        simsiam_model = simsiam.SimSiam(self.config_data, self.config_model)        
+        simsiam_model.load_weights(self.config_model.get('MODEL_NAME'))
         self.model= simsiam_model.encoder
                 
 
     def load_data(self):
-        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+        dataset = self.config_model.get('DATASET')
+        assert (dataset in ['CIFAR', 'MNIST']), 'dataset is not available'
+        if  dataset == 'CIFAR' :
+            (_, _), (x_test, _) = tf.keras.datasets.cifar10.load_data()
+        if dataset == 'MNIST' : 
+            (_, _), (x_test, _) = tf.keras.datasets.mnist.load_data()
+            x_test = np.expand_dims(x_test, axis = -1)
+            
         idx = np.random.permutation(x_test.shape[0])
         self.data = x_test[idx[:1000], :, :, :]        
         print(self.data.shape)
@@ -33,7 +39,7 @@ class SSearch():
             return dict
         filename = './cifar/cifar-10-batches-py/data_batch_1'
         """
-        cifar 10 
+        cifar 10 url        
         https://www.cs.toronto.edu/~kriz/cifar.html 
         """
         data = unpickle(filename)
@@ -53,8 +59,7 @@ class SSearch():
 
 
     def visualize(self, idx):    
-        size = self.data.shape[1]
-        
+        size = self.data.shape[1]        
         n = 10
         image = np.ones((size, n*size, 3), dtype = np.uint8)*255                        
         i = 0
@@ -67,7 +72,7 @@ class SSearch():
 if __name__ == '__main__' :
     
     ssearch = SSearch('example.ini')
-    ssearch.load_data2()
+    ssearch.load_data()
     ssearch.compute_features()
     idxs = np.random.randint(1000, size = 10)
     for idx in idxs :
