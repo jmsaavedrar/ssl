@@ -20,7 +20,7 @@ class SSearch():
     def load_model(self):
         (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
         idx = np.random.permutation(x_test.shape[0])
-        self.data = x_test[idx, :, :, :]        
+        self.data = x_test[idx[:1000], :, :, :]        
         print(self.data.shape)
     
 
