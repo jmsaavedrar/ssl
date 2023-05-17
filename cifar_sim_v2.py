@@ -18,11 +18,31 @@ class SSearch():
         self.model= simsiam_model.encoder
                 
 
-    def load_model(self):
+    def load_data(self):
         (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
         idx = np.random.permutation(x_test.shape[0])
         self.data = x_test[idx[:1000], :, :, :]        
         print(self.data.shape)
+        
+    def load_data2(self):
+        
+        def unpickle(file):
+            import pickle
+            with open(file, 'rb') as fo:
+                dict = pickle.load(fo, encoding='latin1')
+            return dict
+        filename = './cifar/cifar-10-batches-py/data_batch_1'
+        """
+        cifar 10 
+        https://www.cs.toronto.edu/~kriz/cifar.html 
+        """
+        data = unpickle(filename)
+        data = data['data']    
+        data = np.reshape(data, (-1,3,32,32));
+        data = np.transpose(data, (0,2,3,1))
+        idx = np.random.permutation(data.shape[0])
+        self.data = data[idx[:1000], :, :, :]                
+    
     
     def compute_features(self):
         feats = self.model.predict(self.data)        
@@ -47,12 +67,12 @@ class SSearch():
 if __name__ == '__main__' :
     
     ssearch = SSearch('example.ini')
-    ssearch.load_model()
+    ssearch.load_data2()
     ssearch.compute_features()
     idxs = np.random.randint(1000, size = 10)
     for idx in idxs :
         rimage =  ssearch.visualize(idx)
-        fname = 'result_2_{}.png'.format(idx)
+        fname = 'result_datos_2_{}.png'.format(idx)
         fname = os.path.join('results',fname)
         io.imsave(fname, rimage)
         print('result saved at {}'.format(fname))
