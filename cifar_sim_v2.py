@@ -33,7 +33,8 @@ class SSearch():
 
 
     def visualize(self, idx):    
-        size = self.data[1]
+        size = self.data.shape[1]
+        
         n = 10
         image = np.ones((size, n*size), dtype = np.uint8)*255                        
         i = 0
