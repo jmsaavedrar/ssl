@@ -1,5 +1,5 @@
 #import models.resnet as resnet
-import moedls.simple as simple
+import models.simple as simple
 import tensorflow as tf
 import configparser
 import os
