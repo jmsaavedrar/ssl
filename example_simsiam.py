@@ -39,11 +39,11 @@ assert (dataset in ['CIFAR', 'MNIST']), 'dataset is not available'
 if  dataset == 'CIFAR' :
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 else :
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-    x_train = np.expand_dims(x_test, axis = -1)
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()    
 
 #data one
 #SEED is used to keep the same randomization in both ds_one and ds_two
+
 ssl_ds_one = tf.data.Dataset.from_tensor_slices(x_train)
 ssl_ds_one = (
     ssl_ds_one.shuffle(1024, seed=config_model.getint('SEED'))

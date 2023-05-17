@@ -41,12 +41,12 @@ class DataAugmentation():
         # As discussed in the SimCLR paper, the series of augmentation
         # transformations (except for random crops) need to be applied
         # randomly to impose translational invariance.
-        if self.config.get('DATASET') == 'MNIST' :
-            image = self.random_apply(self.color_jitter, image, p=0.8)
-        else :
-            image = self.flip_random_crop(image)
-            image = self.random_apply(self.color_jitter, image, p=0.8)
-            image = self.random_apply(self.color_drop, image, p=0.2)
+        if self.config.get('DATASET') == 'MNIST' :            
+            image = tf.image.grayscale_to_rgb(image)
+            
+        image = self.flip_random_crop(image)
+        image = self.random_apply(self.color_jitter, image, p=0.8)
+        image = self.random_apply(self.color_drop, image, p=0.2)
         return image
     
     

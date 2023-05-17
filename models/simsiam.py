@@ -11,9 +11,7 @@ class SimSiam(tf.keras.Model):
         self.PROJECT_DIM =  config_model.getint('PROJECT_DIM')
         self.WEIGHT_DECAY = config_model.getfloat('WEIGHT_DECAY')
         self.LATENT_DIM  = config_model.getint('LATENT_DIM')        
-        self.CHANNELS = 3
-        if config_model.getint('DATASET') == 'MNIST' :
-            self.CHANNELS = 1
+        self.CHANNELS = 3        
         print('{} {} {} {}'.format(self.CROP_SIZE, self.PROJECT_DIM, self.WEIGHT_DECAY, self.LATENT_DIM))
         self.encoder = self.get_encoder()
         self.predictor = self.get_predictor()
