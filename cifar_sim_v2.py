@@ -32,14 +32,14 @@ class SSearch():
         self.sorted_pos = np.argsort(-sim, axis = 1) 
 
 
-    def visualize(self, sort_idx):    
+    def visualize(self, idx):    
         size = self.data[1]
         n = 10
         image = np.ones((size, n*size), dtype = np.uint8)*255                        
         i = 0
-        for i in np.arange(n) :
-            image[:, i * size:(i + 1) * size] = self.data[self.sorted_idx[i], : , : ]
-            i = i + 1   
+        for i , pos in enumerate(self.sorted_pos[idx, :n]) :
+            image[:, i * size:(i + 1) * size] = self.data[pos, : , : ]
+               
         return image       
          
 
