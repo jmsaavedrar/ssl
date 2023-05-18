@@ -124,8 +124,8 @@ class BYOL(tf.keras.Model):
 #         self.step = self.step + 1 
 #         return {"loss": self.loss_tracker.result()}
     
-    def fit_byol(self, data, n_epochs):
-        for epoch in range(n_epochs) :
+    def fit_byol(self, data, epochs):
+        for epoch in range(epochs) :
             for step, batch in enumerate(data) :
                 # Unpack the data.
                 ds_one, ds_two = batch
