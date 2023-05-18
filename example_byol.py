@@ -82,9 +82,10 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 # Compile model and start training.
 simsiam_model = byol.BYOL(config_data, config_model)
 simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-history = simsiam_model.fit(ssl_ds, 
-                      epochs=config_model.getint('EPOCHS'), 
-                      callbacks=[early_stopping])
+simsiam_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
+#history = simsiam_model.fit(ssl_ds, 
+#                      epochs=config_model.getint('EPOCHS'), 
+#                      callbacks=[early_stopping])
   
 #predicting
   
