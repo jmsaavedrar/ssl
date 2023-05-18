@@ -160,7 +160,7 @@ class BYOL(tf.keras.Model):
                 tau = (np.cos(np.pi* ((step + 1)/self.STEPS)) + 1) / 2
                 for i in range(len(online_encoder_w)):
                     target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-                self.target_encoder.set_weights(self.target_encoder)        
+                self.target_encoder.set_weights(target_encoder_w)        
                 # Monitor loss.
                 self.loss_tracker.update_state(loss)
                 print('step : {} loss {}'.format(step,loss))
