@@ -83,46 +83,91 @@ class BYOL(tf.keras.Model):
     def metrics(self):
         return [self.loss_tracker]
 
-    def train_step(self, data):
-        # Unpack the data.
-        ds_one, ds_two = data
-
-        z1_target = self.target_encoder(ds_one)
-        z2_target = self.target_encoder(ds_two)
-        # Forward pass through the encoder and predictor.
-        with tf.GradientTape() as tape:
-            z1_online = self.online_encoder(ds_one)            
-            
-            z2_online = self.online_encoder(ds_two)            
-            
-            p1_online = self.online_predictor(z1_online)
-            p2_online = self.online_predictor(z2_online)
-            
-                                    
-            # Note that here we are enforcing the network to match
-            # the representations of two differently augmented batches
-            # of data.
-            loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
-
-        # Compute gradients and update the parameters.
-        learnable_params = (
-            self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
-        )
-        gradients = tape.gradient(loss, learnable_params)
-        self.optimizer.apply_gradients(zip(gradients, learnable_params))
+#     def train_step(self, data):
+#         # Unpack the data.
+#         ds_one, ds_two = data
+# 
+#         z1_target = self.target_encoder(ds_one)
+#         z2_target = self.target_encoder(ds_two)
+#         # Forward pass through the encoder and predictor.
+#         with tf.GradientTape() as tape:
+#             z1_online = self.online_encoder(ds_one)            
+#             
+#             z2_online = self.online_encoder(ds_two)            
+#             
+#             p1_online = self.online_predictor(z1_online)
+#             p2_online = self.online_predictor(z2_online)
+#             
+#                                     
+#             # Note that here we are enforcing the network to match
+#             # the representations of two differently augmented batches
+#             # of data.
+#             loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
+# 
+#         # Compute gradients and update the parameters.
+#         learnable_params = (
+#             self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
+#         )
+#         gradients = tape.gradient(loss, learnable_params)
+#         self.optimizer.apply_gradients(zip(gradients, learnable_params))
+#         
+#         del tape
+#         #update weights
+#         target_encoder_w = self.target_encoder.get_weights()
+#         online_encoder_w = self.online_encoder.get_weights()
+#         tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+#         for i in range(len(online_encoder_w)):
+#             target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+#         self.target_encoder.set_weights(self.target_encoder)        
+#         # Monitor loss.
+#         self.loss_tracker.update_state(loss)
+#         self.step = self.step + 1 
+#         return {"loss": self.loss_tracker.result()}
+    
+    def fit_byol(self, data, n_epochs):
+        for epoch in range(n_epochs) :
+            for step, batch in enumerate(data) :
+                # Unpack the data.
+                ds_one, ds_two = batch
+                z1_target = self.target_encoder(ds_one)
+                z2_target = self.target_encoder(ds_two)
+                # Forward pass through the encoder and predictor.
+                with tf.GradientTape() as tape:
+                    z1_online = self.online_encoder(ds_one)            
+                    
+                    z2_online = self.online_encoder(ds_two)            
+                    
+                    p1_online = self.online_predictor(z1_online)
+                    p2_online = self.online_predictor(z2_online)
+                    
+                                            
+                    # Note that here we are enforcing the network to match
+                    # the representations of two differently augmented batches
+                    # of data.
+                    loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
         
-        del tape
-        #update weights
-        target_encoder_w = self.target_encoder.get_weights()
-        online_encoder_w = self.online_encoder.get_weights()
-        tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
-        for i in range(len(online_encoder_w)):
-            target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-        self.target_encoder.set_weights(self.target_encoder)        
-        # Monitor loss.
-        self.loss_tracker.update_state(loss)
-        self.step = self.step + 1 
-        return {"loss": self.loss_tracker.result()}
+                # Compute gradients and update the parameters.
+                learnable_params = (
+                    self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
+                )
+                gradients = tape.gradient(loss, learnable_params)
+                self.optimizer.apply_gradients(zip(gradients, learnable_params))
+                
+                del tape
+                #update weights
+                target_encoder_w = self.target_encoder.get_weights()
+                online_encoder_w = self.online_encoder.get_weights()
+                tau = (np.cos(np.pi* ((step + 1)/self.STEPS)) + 1) / 2
+                for i in range(len(online_encoder_w)):
+                    target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+                self.target_encoder.set_weights(self.target_encoder)        
+                # Monitor loss.
+                self.loss_tracker.update_state(loss)
+                print('step : {} loss {}'.format(step,loss))
+            print('epoch : {}'.format(epoch))
+#                self.step = self.step + 1 
+                #return {"loss": self.loss_tracker.result()}
+        
     
 if __name__ == '__main__' :    
     config = configparser.ConfigParser()
