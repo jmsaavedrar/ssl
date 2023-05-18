@@ -88,12 +88,12 @@ class BYOL(tf.keras.Model):
         ds_one, ds_two = data
 
         z1_target = self.target_encoder(ds_one)
-        z2_target = self.target_encoder(ds_one)
+        z2_target = self.target_encoder(ds_two)
         # Forward pass through the encoder and predictor.
         with tf.GradientTape() as tape:
             z1_online = self.online_encoder(ds_one)            
             
-            z2_online = self.online_encoder(ds_one)            
+            z2_online = self.online_encoder(ds_two)            
             
             p1_online = self.online_predictor(z1_online)
             p2_online = self.online_predictor(z2_online)
@@ -110,14 +110,15 @@ class BYOL(tf.keras.Model):
         )
         gradients = tape.gradient(loss, learnable_params)
         self.optimizer.apply_gradients(zip(gradients, learnable_params))
-
-        #update weghts
+        
+        del tape
+        #update weights
         target_encoder_w = self.target_encoder.get_weights()
         online_encoder_w = self.online_encoder.get_weights()
         tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
         for i in range(len(online_encoder_w)):
             target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-        self.target_encoder.set_weights(self.target_encoder)
+        self.target_encoder.set_weights(self.target_encoder)        
         # Monitor loss.
         self.loss_tracker.update_state(loss)
         self.step = self.step + 1 
