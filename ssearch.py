@@ -10,7 +10,7 @@ class SSearch():
     def __init__(self, configfile):
         config = configparser.ConfigParser()
         config.read(configfile)
-        self.config_model = config['SIMSIAM']
+        self.config_model = config['BYOL']
         self.config_data = config['DATA']    
         simsiam_model = simsiam.SimSiam(self.config_data, self.config_model)        
         simsiam_model.load_weights(self.config_model.get('MODEL_NAME'))

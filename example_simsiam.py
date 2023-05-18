@@ -70,6 +70,7 @@ ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))
 num_training_samples = len(x_train)
 
 steps = config_model.getint('EPOCHS') * (num_training_samples // config_model.getint('BATCH_SIZE'))
+config_model['STEPS'] = steps
 lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(
     initial_learning_rate=0.03, decay_steps = steps)
   
