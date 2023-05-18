@@ -81,7 +81,7 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
   
 tf.debugging.set_log_device_placement(True)
 gpus = tf.config.list_logical_devices('GPU')
-strategy = tf.distribute.MultiWorkerMirroredStrategy()
+strategy = tf.distribute.MultiWorkerMirroredStrategy(gpus)
 with strategy.scope():
     # Compile model and start training.
     simsiam_model = byol.BYOL(config_data, config_model)
