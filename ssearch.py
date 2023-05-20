@@ -7,10 +7,10 @@ import configparser
 import skimage.io as io
 
 class SSearch():
-    def __init__(self, configfile):
+    def __init__(self, configfile, model):
         config = configparser.ConfigParser()
         config.read(configfile)
-        self.config_model = config['SIMSIAM']
+        self.config_model = config[model]
         self.config_data = config['DATA']    
         simsiam_model = simsiam.SimSiam(self.config_data, self.config_model)        
         simsiam_model.load_weights(self.config_model.get('MODEL_NAME'))
@@ -72,7 +72,7 @@ class SSearch():
 
 if __name__ == '__main__' :
     
-    ssearch = SSearch('example.ini')
+    ssearch = SSearch('example.ini', 'BYOL')
     ssearch.load_data()
     ssearch.compute_features()
     idxs = np.random.randint(1000, size = 10)
