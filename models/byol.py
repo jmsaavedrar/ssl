@@ -163,7 +163,7 @@ class BYOL(tf.keras.Model):
                 self.target_encoder.set_weights(target_encoder_w)        
                 # Monitor loss.
                 self.loss_tracker.update_state(loss)
-                print('step : {} loss {}'.format(step,loss))
+                #print('step : {} loss {}'.format(step,loss))
             print('epoch : {}'.format(epoch))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
