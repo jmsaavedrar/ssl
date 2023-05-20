@@ -153,7 +153,7 @@ class BYOL(tf.keras.Model):
                 gradients = tape.gradient(loss, learnable_params)
                 self.optimizer.apply_gradients(zip(gradients, learnable_params))
                 
-                del tape
+                #del tape
                 #update weights
                 target_encoder_w = self.target_encoder.get_weights()
                 online_encoder_w = self.online_encoder.get_weights()
