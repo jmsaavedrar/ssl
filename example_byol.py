@@ -83,7 +83,6 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 strategy = tf.distribute.MirroredStrategy(None)
 with strategy.scope():
 #Compile model and start training.
-    assert tf.distribute.get_replica_context() is not None 
     simsiam_model = byol.BYOL(config_data, config_model)
     simsiam_model.set_distrution_strategy(strategy)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))

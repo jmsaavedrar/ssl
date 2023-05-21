@@ -133,6 +133,7 @@ class BYOL(tf.keras.Model):
       
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)
+        assert tf.distribute.get_replica_context() is not None
         for epoch in range(epochs) :
             for dist_batch in dist_dataset :                
                     loss = self.dist_train_step(dist_batch)                
