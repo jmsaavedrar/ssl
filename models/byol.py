@@ -125,7 +125,7 @@ class BYOL(tf.keras.Model):
             self.step += 1               
             return loss
          
-    @tf.function
+    #@tf.function
     def dist_train_step(self, dist_batch):      
         per_replica_losses = self.strategy.run(self.train_step_byol, args=(dist_batch,))
         return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
