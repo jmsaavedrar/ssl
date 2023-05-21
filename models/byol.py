@@ -134,7 +134,7 @@ class BYOL(tf.keras.Model):
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)
         for epoch in range(epochs) :
-            for dist_batch in enumerate(dist_dataset) :                
+            for dist_batch in dist_dataset :                
                     loss = self.dist_train_step(dist_batch)                
                     print('step : {} loss {}'.format(self.step,loss))
             print('epoch : {}'.format(epoch))
