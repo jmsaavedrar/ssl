@@ -79,9 +79,8 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
     monitor="loss", patience=5, restore_best_weights=True
 )
   
-tf.debugging.set_log_device_placement(True)
-gpus = tf.config.list_logical_devices('GPU')
-strategy = tf.distribute.MirroredStrategy(gpus)
+#tf.debugging.set_log_device_placement(True)
+strategy = tf.distribute.MirroredStrategy(None)
 with strategy.scope():
 #Compile model and start training.
     assert tf.distribute.get_replica_context() is not None 
