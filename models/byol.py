@@ -82,88 +82,61 @@ class BYOL(tf.keras.Model):
     @property
     def metrics(self):
         return [self.loss_tracker]
-
-#     def train_step(self, data):
-#         # Unpack the data.
-#         ds_one, ds_two = data
-# 
-#         z1_target = self.target_encoder(ds_one)
-#         z2_target = self.target_encoder(ds_two)
-#         # Forward pass through the encoder and predictor.
-#         with tf.GradientTape() as tape:
-#             z1_online = self.online_encoder(ds_one)            
-#             
-#             z2_online = self.online_encoder(ds_two)            
-#             
-#             p1_online = self.online_predictor(z1_online)
-#             p2_online = self.online_predictor(z2_online)
-#             
-#                                     
-#             # Note that here we are enforcing the network to match
-#             # the representations of two differently augmented batches
-#             # of data.
-#             loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
-# 
-#         # Compute gradients and update the parameters.
-#         learnable_params = (
-#             self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
-#         )
-#         gradients = tape.gradient(loss, learnable_params)
-#         self.optimizer.apply_gradients(zip(gradients, learnable_params))
-#         
-#         del tape
-#         #update weights
-#         target_encoder_w = self.target_encoder.get_weights()
-#         online_encoder_w = self.online_encoder.get_weights()
-#         tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
-#         for i in range(len(online_encoder_w)):
-#             target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-#         self.target_encoder.set_weights(self.target_encoder)        
-#         # Monitor loss.
-#         self.loss_tracker.update_state(loss)
-#         self.step = self.step + 1 
-#         return {"loss": self.loss_tracker.result()}
     
-    def fit_byol(self, data, epochs):
-        for epoch in range(epochs) :
-            for step, batch in enumerate(data) :
-                # Unpack the data.
-                ds_one, ds_two = batch
-                z1_target = self.target_encoder(ds_one)
-                z2_target = self.target_encoder(ds_two)
-                # Forward pass through the encoder and predictor.
-                with tf.GradientTape() as tape:
-                    z1_online = self.online_encoder(ds_one)            
-                    
-                    z2_online = self.online_encoder(ds_two)            
-                    
-                    p1_online = self.online_predictor(z1_online)
-                    p2_online = self.online_predictor(z2_online)
-                    
-                                            
-                    # Note that here we are enforcing the network to match
-                    # the representations of two differently augmented batches
-                    # of data.
-                    loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
+    def set_distrution_strategy(self, strategy):
+        self.strategy = strategy
         
-                # Compute gradients and update the parameters.
-                learnable_params = (
-                    self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
-                )
-                gradients = tape.gradient(loss, learnable_params)
-                self.optimizer.apply_gradients(zip(gradients, learnable_params))
+    def train_step_byol(self, batch):
+            ds_one, ds_two = batch
+            z1_target = self.target_encoder(ds_one)
+            z2_target = self.target_encoder(ds_two)
+            # Forward pass through the encoder and predictor.
+            with tf.GradientTape() as tape:
+                z1_online = self.online_encoder(ds_one)            
                 
-                #del tape
-                #update weights
-                target_encoder_w = self.target_encoder.get_weights()
-                online_encoder_w = self.online_encoder.get_weights()
-                tau = (np.cos(np.pi* ((step + 1)/self.STEPS)) + 1) / 2
-                for i in range(len(online_encoder_w)):
-                    target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-                self.target_encoder.set_weights(target_encoder_w)        
-                # Monitor loss.
-                self.loss_tracker.update_state(loss)
-                #print('step : {} loss {}'.format(step,loss))
+                z2_online = self.online_encoder(ds_two)            
+                
+                p1_online = self.online_predictor(z1_online)
+                p2_online = self.online_predictor(z2_online)
+                
+                                        
+                # Note that here we are enforcing the network to match
+                # the representations of two differently augmented batches
+                # of data.
+                loss = self.compute_loss(p1_online, z2_target) / 2 + self.compute_loss(p2_online, z1_target) / 2
+    
+            # Compute gradients and update the parameters.
+            learnable_params = (
+                self.online_encoder.trainable_variables + self.online_predictor.trainable_variables
+            )
+            gradients = tape.gradient(loss, learnable_params)
+            self.optimizer.apply_gradients(zip(gradients, learnable_params))
+            
+            #del tape
+            #update weights
+            target_encoder_w = self.target_encoder.get_weights()
+            online_encoder_w = self.online_encoder.get_weights()
+            tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+            for i in range(len(online_encoder_w)):
+                target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+            self.target_encoder.set_weights(target_encoder_w)        
+            # Monitor loss.
+            #self.loss_tracker.update_state(loss)
+            self.step += 1               
+            return loss
+         
+    @tf.function
+    def dist_train_step(self, dist_batch):      
+        per_replica_losses = self.strategy.run(self.train_step_byol, args=(dist_batch,))
+        return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
+                               axis=None)    
+      
+    def fit_byol(self, data, epochs, mirrored_strategy):
+        dist_dataset = mirrored_strategy.experimental_distribute_dataset(data)
+        for epoch in range(epochs) :
+            for dist_batch in enumerate(dist_dataset) :                
+                    loss = self.dist_train_step(dist_batch)                
+                    print('step : {} loss {}'.format(self.step,loss))
             print('epoch : {}'.format(epoch))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
