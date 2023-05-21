@@ -84,6 +84,7 @@ gpus = tf.config.list_logical_devices('GPU')
 strategy = tf.distribute.MirroredStrategy(gpus)
 with strategy.scope():
 #Compile model and start training.
+    assert tf.distribute.get_replica_context() is not None 
     simsiam_model = byol.BYOL(config_data, config_model)
     simsiam_model.set_distrution_strategy(strategy)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
