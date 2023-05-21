@@ -131,8 +131,8 @@ class BYOL(tf.keras.Model):
         return self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
                                axis=None)    
       
-    def fit_byol(self, data, epochs, mirrored_strategy):
-        dist_dataset = mirrored_strategy.experimental_distribute_dataset(data)
+    def fit_byol(self, data, epochs):
+        dist_dataset = self.strategy.experimental_distribute_dataset(data)
         for epoch in range(epochs) :
             for dist_batch in enumerate(dist_dataset) :                
                     loss = self.dist_train_step(dist_batch)                

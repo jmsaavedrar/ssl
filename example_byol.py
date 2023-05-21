@@ -85,6 +85,7 @@ strategy = tf.distribute.MirroredStrategy(gpus)
 with strategy.scope():
 #Compile model and start training.
     simsiam_model = byol.BYOL(config_data, config_model)
+    simsiam_model.set_distrution_strategy(strategy)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
     simsiam_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
 #history = simsiam_model.fit(ssl_ds, 
