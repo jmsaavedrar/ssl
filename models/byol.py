@@ -144,7 +144,8 @@ class BYOL(tf.keras.Model):
                 #update weights            
                 target_encoder_w = self.target_encoder.get_weights()
                 online_encoder_w = self.online_encoder.get_weights()
-                tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+                #tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+                tau = 0.99
                 for i in range(len(online_encoder_w)):
                     target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
                 self.target_encoder.set_weights(target_encoder_w)
