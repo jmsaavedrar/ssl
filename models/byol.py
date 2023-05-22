@@ -113,16 +113,15 @@ class BYOL(tf.keras.Model):
             self.optimizer.apply_gradients(zip(gradients, learnable_params))
             
             #del tape
-            #update weights
+            #update weights            
             target_encoder_w = self.target_encoder.get_weights()
             online_encoder_w = self.online_encoder.get_weights()
             tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
             for i in range(len(online_encoder_w)):
                 target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-            # self.target_encoder.set_weights(target_encoder_w)        
+            self.target_encoder.set_weights(target_encoder_w)        
             # Monitor loss.
-            #self.loss_tracker.update_state(loss)
-            self.step += 1               
+            #self.loss_tracker.update_state(loss)                           
             return loss
          
     @tf.function
@@ -134,9 +133,18 @@ class BYOL(tf.keras.Model):
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)        
         for epoch in range(epochs) :
-            for dist_batch in dist_dataset :                
-                    loss = self.dist_train_step(dist_batch)                
-                    print('step : {} loss {}'.format(self.step,loss))
+            for step, dist_batch in enumerate(dist_dataset) :                
+                loss = self.dist_train_step(dist_batch)
+                    #del tape
+                    #update weights            
+                target_encoder_w = self.target_encoder.get_weights()
+                online_encoder_w = self.online_encoder.get_weights()
+                tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+                for i in range(len(online_encoder_w)):
+                    target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+                self.target_encoder.set_weights(target_encoder_w)
+                            
+                print('step : {} loss {}'.format(step,loss))
             print('epoch : {}'.format(epoch))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
