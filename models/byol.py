@@ -133,13 +133,15 @@ class BYOL(tf.keras.Model):
         print('total {}'.format(total))
         return total / self.strategy.num_replicas_in_sync 
       
+      
     def fit_byol(self, data, epochs):
-        dist_dataset = self.strategy.experimental_distribute_dataset(data)        
+        #dist_dataset = self.strategy.experimental_distribute_dataset(data)        
         for epoch in range(epochs) :
-            for step, dist_batch in enumerate(dist_dataset) :                
-                loss = self.dist_train_step(dist_batch)
-                    #del tape
-                    #update weights            
+            for step, batch in enumerate(data) :                
+                #loss = self.dist_train_step(dist_batch)
+                loss = self.train_step_byol(batch)
+                    
+                #update weights            
                 target_encoder_w = self.target_encoder.get_weights()
                 online_encoder_w = self.online_encoder.get_weights()
                 tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
