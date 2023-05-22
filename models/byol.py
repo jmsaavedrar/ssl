@@ -139,7 +139,7 @@ class BYOL(tf.keras.Model):
                 self.target_encoder.set_weights(target_encoder_w)
                 if (step + 1) %  100 == 0 :
                     print('step : {} loss {}'.format(step + 1,loss))
-            print('---- epoch : {} ----'.format(epoch))
+            print('---- epoch : {} ----'.format(epoch + 1))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
         
