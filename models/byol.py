@@ -131,7 +131,7 @@ class BYOL(tf.keras.Model):
         total = self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
                                axis=None)
         print('total {}'.format(total))
-        return total 
+        return total / self.strategy.number_of_replicas_in_sync 
       
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)        
