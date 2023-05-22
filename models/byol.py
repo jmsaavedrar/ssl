@@ -144,7 +144,7 @@ class BYOL(tf.keras.Model):
                     target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
                 self.target_encoder.set_weights(target_encoder_w)
                             
-                print('step : {} loss {}'.format(step,loss))
+                print('step : {} loss {}'.format(step + 1,loss))
             print('epoch : {}'.format(epoch))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
