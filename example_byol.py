@@ -23,61 +23,7 @@ def visualize_data(ds_1, ds_2) :
         plt.waitforbuttonpress(1)
     plt.show()
     
-
-def train_step(model, step, batch):
-    ds_one, ds_two = batch    
-    z1_target = model.target_encoder(ds_one)
-    z2_target = model.target_encoder(ds_two)
-    # Forward pass through the encoder and predictor.
-    with tf.GradientTape() as tape:
-        z1_online = model.online_encoder(ds_one)            
-        
-        z2_online = model.online_encoder(ds_two)            
-        
-        p1_online = model.online_predictor(z1_online)
-        p2_online = model.online_predictor(z2_online)
-        
-                                
-        # Note that here we are enforcing the network to match
-        # the representations of two differently augmented batches
-        # of data.
-        loss = model.compute_loss(p1_online, z2_target) / 2 + model.compute_loss(p2_online, z1_target) / 2
-
-    # Compute gradients and update the parameters.
-    learnable_params = (
-        model.online_encoder.trainable_variables + model.online_predictor.trainable_variables
-    )
-    gradients = tape.gradient(loss, learnable_params)
-    model.optimizer.apply_gradients(zip(gradients, learnable_params))
-    
-    #del tape
-    #update weights
-    # target_encoder_w = model.target_encoder.get_weights()
-    # online_encoder_w = model.online_encoder.get_weights()
-    # tau = (np.cos(np.pi* ((step)/model.STEPS)) + 1) / 2
-    # for i in range(len(online_encoder_w)):
-    #     target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-    # model.target_encoder.set_weights(target_encoder_w)        
-    # Monitor loss.
-    #self.loss_tracker.update_state(loss)                
-    return loss
          
-@tf.function
-def dist_train_step(model, step, dist_batch):      
-    per_replica_losses = model.strategy.run(train_step, args=(model, step, dist_batch))    
-    return model.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
-                           axis=None)    
-    
-def fit_byol(model, data, epochs):
-        dist_dataset = model.strategy.experimental_distribute_dataset(data)        
-        for epoch in range(epochs) :
-            for step, dist_batch in enumerate(dist_dataset) :                
-                    loss = dist_train_step(model, step, dist_batch)                
-                    print('step : {} loss {}'.format(step,loss))
-            print('epoch : {}'.format(epoch))
-#                self.step = self.step + 1 
-                #return {"loss": self.loss_tracker.result()}
-                
 AUTO = tf.data.AUTOTUNE
 #load configuracion file
 config = configparser.ConfigParser()
@@ -139,7 +85,6 @@ with strategy.scope():
     simsiam_model = byol.BYOL(config_data, config_model)    
     simsiam_model.set_distrution_strategy(strategy)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-    #fit_byol(simsiam_model, ssl_ds, epochs=config_model.getint('EPOCHS'))
     simsiam_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
 #history = simsiam_model.fit(ssl_ds, 
 #                      epochs=config_model.getint('EPOCHS'), 
