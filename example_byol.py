@@ -80,11 +80,10 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 )
   
 #tf.debugging.set_log_device_placement(True)
-strategy = tf.distribute.MirroredStrategy(None)
+strategy = tf.distribute.StrategyExtended(None)
 with strategy.scope():
 #Compile model and start training.
-    tf.distribute.get_replica_context().merge_call()
-    simsiam_model = byol.BYOL(config_data, config_model)
+    simsiam_model = byol.BYOL(config_data, config_model)    
     simsiam_model.set_distrution_strategy(strategy)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
     simsiam_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
