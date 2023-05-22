@@ -52,12 +52,12 @@ def train_step(model, step, batch):
     
     #del tape
     #update weights
-    target_encoder_w = model.target_encoder.get_weights()
-    online_encoder_w = model.online_encoder.get_weights()
-    tau = (np.cos(np.pi* ((step)/model.STEPS)) + 1) / 2
-    for i in range(len(online_encoder_w)):
-        target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
-    model.target_encoder.set_weights(target_encoder_w)        
+    # target_encoder_w = model.target_encoder.get_weights()
+    # online_encoder_w = model.online_encoder.get_weights()
+    # tau = (np.cos(np.pi* ((step)/model.STEPS)) + 1) / 2
+    # for i in range(len(online_encoder_w)):
+    #     target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+    # model.target_encoder.set_weights(target_encoder_w)        
     # Monitor loss.
     #self.loss_tracker.update_state(loss)                
     return loss
