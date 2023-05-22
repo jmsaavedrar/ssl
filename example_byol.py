@@ -79,7 +79,7 @@ early_stopping = tf.keras.callbacks.EarlyStopping(
 )
   
 #tf.debugging.set_log_device_placement(True)
-strategy = tf.distribute.MirroredStrategy(None)
+strategy = tf.distribute.MultiWorkerMirroredStrategy(None)
 with strategy.scope():
 #Compile model and start training.
     simsiam_model = byol.BYOL(config_data, config_model)    
