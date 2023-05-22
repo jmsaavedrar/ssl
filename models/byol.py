@@ -129,6 +129,7 @@ class BYOL(tf.keras.Model):
         total = 0 
         n = 0;      
         for i, data in enumerate(dist_batch) :
+            print(data)
             per_replica_losses = self.strategy.run(self.train_step_byol, args=(data,))        
             total += self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
                                axis=None)
