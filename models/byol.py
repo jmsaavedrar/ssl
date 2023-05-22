@@ -134,7 +134,7 @@ class BYOL(tf.keras.Model):
                                axis=None)
             print('----- {} '.format(i))
             n = i
-        return total / i    
+        return total / n 
       
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)        
