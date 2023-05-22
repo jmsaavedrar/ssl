@@ -126,16 +126,12 @@ class BYOL(tf.keras.Model):
          
     @tf.function
     def dist_train_step(self, dist_batch):
-        total = 0 
-        n = 0;      
-        for i, data in enumerate(dist_batch) :
-            print(data)
-            per_replica_losses = self.strategy.run(self.train_step_byol, args=(data,))        
-            total += self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
+        print('dist_data {}'.format(dist_batch))
+        per_replica_losses = self.strategy.run(self.train_step_byol, args=(dist_batch,))        
+        total = self.strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses,
                                axis=None)
-            print('----- {} '.format(i))
-            n = i
-        return total / n 
+        print('total {}'.format(total))
+        return total 
       
     def fit_byol(self, data, epochs):
         dist_dataset = self.strategy.experimental_distribute_dataset(data)        
