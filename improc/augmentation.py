@@ -40,7 +40,7 @@ class DataAugmentation():
     def custom_augment(self, image):
         # As discussed in the SimCLR paper, the series of augmentation
         # transformations (except for random crops) need to be applied
-        # randomly to impose translational invariance.
+        # randomly to impose translational invariance.        
         if self.config.get('DATASET') == 'MNIST' :            
             image = tf.image.grayscale_to_rgb(image)
             
