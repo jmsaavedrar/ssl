@@ -10,7 +10,7 @@ import configparser
 import skimage.io as io
 import tensorflow_datasets as tfds
 
-def mnist_map_func(image, daug_func):
+def mnist_map_func(image):
     image = image['image']    
     image = tf.image.grayscale_to_rgb(image) 
     return image
