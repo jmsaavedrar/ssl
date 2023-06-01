@@ -31,10 +31,12 @@ class SSearch():
         dataset = self.config_data.get('DATASET')
         assert (dataset in ['CIFAR', 'MNIST']), 'dataset is not available'
         ds = tfds.load('tfds_mnist')
-        ds_test = ds['test'].shuffle(1024)
-        ds_test = ds_test.take(1000)        
-        self.data = ds_test                
-                                
+        ds_test = ds['train'].shuffle(1024).batch(1000)
+        ds_test = ds_test.map(mnist_map_func)
+        ds_test = ds_test.take(1)
+        for sample in ds_test :
+            self.data = sample.numpy()
+              
     
     def compute_features(self):
         feats = self.model.predict(self.data)        
@@ -44,15 +46,15 @@ class SSearch():
         self.sorted_pos = np.argsort(-sim, axis = 1) 
 
 
-    def visualize(self, idx):    
-        size = self.data.shape[1]        
+    def visualize(self, idx):
+        size = self.config_data.getint('CROP_SIZE')
         n = 10
-        image = np.ones((size, n*size, 3), dtype = np.uint8)*255                        
+        image = np.ones((size, n*size, 3), dtype = np.uint8)*255
         i = 0
         for i , pos in enumerate(self.sorted_pos[idx, :n]) :
-            image[:, i * size:(i + 1) * size, :] = self.data[pos, : , :, : ]
-               
-        return image       
+            image[:, i * size:(i + 1) * size, :] = self.data[pos,:,:,:]
+        return image
+       
     
     def get_dataset(self):
         return self.config_data.get('DATASET')     
