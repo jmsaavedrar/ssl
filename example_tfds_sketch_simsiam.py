@@ -6,7 +6,7 @@ import socket
 ip = socket.gethostbyname(socket.gethostname())
 if ip == '192.168.20.62' :
     sys.path.insert(0,'/home/DIINF/vchang/jsaavedr/Research/git/datasets')
-else
+else :
     sys.path.insert(0,'/home/jsaavedr/Research/git/datasets')
 import os
 import tensorflow as tf
