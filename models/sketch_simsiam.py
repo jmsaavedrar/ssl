@@ -1,10 +1,9 @@
-#import models.resnet as resnet
-import models.simple as simple
+import models.resnet as resnet
 import tensorflow as tf
 import configparser
 import os
 
-class SimSiam(tf.keras.Model):
+class SketchSimSiam(tf.keras.Model):
     def __init__(self, config_data, config_model):
         super().__init__()        
         self.CROP_SIZE = config_data.getint('CROP_SIZE')
@@ -22,10 +21,10 @@ class SimSiam(tf.keras.Model):
         # Input and backbone.
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
         x = inputs / 127.5 - 1
-        #bkbone = resnet.ResNetBackbone([2,2], [64,128])
-        bkbone = simple.Backbone()
+        #the backbone can be an input to the clas SimSiam
+        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512])
+        #bkbone = simple.Backbone()
         x = bkbone(x)   
-        x = tf.keras.layers.GlobalAveragePooling2D()(x) 
         # Projection head.
         x = tf.keras.layers.Dense(
             self.PROJECT_DIM, 
