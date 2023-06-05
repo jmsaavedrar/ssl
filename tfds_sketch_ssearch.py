@@ -10,7 +10,7 @@ import os
 import tfds_qd.tfds_qd as tfds_qd
 import tensorflow as tf
 import numpy as np
-import models.simsiam as simsiam
+import models.sketch_simsiam as simsiam
 import os 
 import configparser
 import skimage.io as io
@@ -28,7 +28,7 @@ class SSearch():
         config.read(configfile)
         self.config_model = config[model]
         self.config_data = config['DATA']    
-        simsiam_model = simsiam.SimSiam(self.config_data, self.config_model)        
+        simsiam_model = simsiam.SketchSimSiam(self.config_data, self.config_model)        
         simsiam_model.load_weights(self.config_model.get('MODEL_NAME'))
         self.model= simsiam_model.encoder
                 
