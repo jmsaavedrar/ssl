@@ -19,6 +19,7 @@ import tensorflow_datasets as tfds
 def mnist_map_func(image):
     image = image['image']    
     image = tf.image.grayscale_to_rgb(image) 
+    image = tf.image.resize(image, (256,256))
     return image
         
         
