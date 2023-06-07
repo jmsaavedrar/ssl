@@ -140,7 +140,7 @@ if __name__ == '__main__':
         # print('saving model')
         model_file =config_model.get('MODEL_NAME')
         if not os.path.exists(os.path.dirname(model_file)) :
-            os.mkdir(os.path.dirname(model_file))
+            os.makedirs(os.path.dirname(model_file))
             print('--- {} was created'.format(os.path.dirname(model_file)))
         ssl_model.save_weights(model_file)
         print("model saved to {}".format(model_file))        
