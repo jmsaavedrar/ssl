@@ -145,12 +145,3 @@ class SketchBYOL(tf.keras.Model):
                 #return {"loss": self.loss_tracker.result()}
         
     
-if __name__ == '__main__' :    
-    config = configparser.ConfigParser()
-    config.read('example.ini')
-    config_model = config['SIMSIAM']
-    config_data = config['DATA']
-    simsiam = BYOL(config_data, config_model)        
-    simsiam.load_weights(config_data.get('MODEL_NAME'))
-    for v in simsiam.encoder.trainable_variables :
-        print(v.numpy)
