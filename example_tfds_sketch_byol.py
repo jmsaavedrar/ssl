@@ -93,10 +93,12 @@ else :
     )
       
     # Compile model and start training.
-    simsiam_model = byol.SketchBYOL(config_data, config_model)
-    simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-    history = simsiam_model.fit_byol(ssl_ds, 
-                          epochs=config_model.getint('EPOCHS'))
+    strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1"])
+    with strategy.scope():
+        simsiam_model = byol.SketchBYOL(config_data, config_model)
+        simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+        history = simsiam_model.fit_byol(ssl_ds, 
+                              epochs=config_model.getint('EPOCHS'))
       
     #predicting
       
