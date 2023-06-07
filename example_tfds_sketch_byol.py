@@ -93,7 +93,7 @@ else :
     )
       
     # Compile model and start training.
-    simsiam_model = simsiam.SketchSimSiam(config_data, config_model)
+    simsiam_model = byol.SketchBYOL(config_data, config_model)
     simsiam_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
     history = simsiam_model.fit(ssl_ds, 
                           epochs=config_model.getint('EPOCHS'), 
