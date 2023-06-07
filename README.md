@@ -15,6 +15,7 @@ test_by_search -config config/qd.ini -model SIMSIAM
 
 # QuicDraw Dataset
 We have prepared a subset of QuickDraw with 1100 instances per class. You can download it from [here](https://www.dropbox.com/s/eq3vzu65elii62i/tfds_qd.tar).
+You should unpack it into  $HOME/tensorflow_datasets (by default, python will look the datasets there). However, you can put the data into another folder, but you'll need to specify the data_dir in the tfds.load() function.
 
 # Dependencies
 * https://github.com/jmsaavedrar/datasets
