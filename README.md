@@ -15,3 +15,6 @@ test_by_search -config config/qd.ini -model SIMSIAM
 
 # QuicDraw Dataset
 We have prepared a subset of QuickDraw with 1100 instances per class. You can download it from [here](https://www.dropbox.com/s/eq3vzu65elii62i/tfds_qd.tar).
+
+# Dependencies
+* https://github.com/jmsaavedrar/datasets
