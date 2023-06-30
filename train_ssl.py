@@ -27,7 +27,6 @@ import models.sketch_simsiam as simsiam
 import models.sketch_byol as byol
 import argparse
 # import the dataset builder, here is an example for qd
-import tfds_qd.tfds_qd
 
 
 def visualize_data(ds_1, ds_2) :
@@ -45,13 +44,13 @@ def visualize_data(ds_1, ds_2) :
     plt.show()
 
 #---------------------------------------------------------------------------------------
-def mnist_map_func(image, daug_func):
+def ssl_map_func(image, daug_func):
     image = image['image']    
     return daug_func(image)
         
 #---------------------------------------------------------------------------------------
 VISUALIZE = False # if false, it runs training
-if ip=='127.0.1.1' :
+if ip == '127.0.1.1' :
     VISUALIZE = True
 
 AUTO = tf.data.AUTOTUNE
@@ -72,26 +71,32 @@ if __name__ == '__main__':
     assert not config_model == None, '{} does not exist'.format(ssl_model_name)
     
     config_data = config['DATA']
-    daug = aug.DataAugmentation(config_data)
-     
+    ds = None
+    #
+    if config_data.get('DATASET') == 'QD' :        
+        ds = tfds.load('tfds_qd')
+    if config_data.get('DATASET') == 'IMAGENET' :        
+        data_dir ='/mnt/hd-data/Datasets/imagenet/tfds'            
+        ds = tfds.load('imagenet1k', data_dir = data_dir)
+        
+    daug = aug.DataAugmentation(config_data)    
     #loading dataset example cifar
-    ds = tfds.load('tfds_qd')
+    
     ds_train = ds['train']
     ssl_ds_one = ds_train
-    ssl_ds_two = ds_train 
-    
+    ssl_ds_two = ds_train     
     #data one
     #SEED is used to keep the same randomization in both ds_one and ds_two
     ssl_ds_one = (
         ssl_ds_one.shuffle(1024, seed=config_model.getint('SEED'))
-        .map(lambda x: mnist_map_func(x, daug.sketch_augment), num_parallel_calls=AUTO)
+        .map(lambda x: ssl_map_func(x, daug.get_augmentation_fun()), num_parallel_calls=AUTO)
         .batch(config_model.getint('BATCH_SIZE'))
         .prefetch(AUTO) )
     
     #data two
     ssl_ds_two = (
         ssl_ds_two.shuffle(1024, seed=config_model.getint('SEED'))
-        .map(lambda x: mnist_map_func(x, daug.sketch_augment), num_parallel_calls=AUTO)
+        .map(lambda x: ssl_map_func(x, daug.get_augmentation_fun()), num_parallel_calls=AUTO)
         .batch(config_model.getint('BATCH_SIZE'))
         .prefetch(AUTO))
     

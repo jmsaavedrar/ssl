@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_addons as tfa
 
 class DataAugmentation():
     def __init__(self, config : dict):
@@ -7,6 +8,8 @@ class DataAugmentation():
     def flip_random_crop(self, image):
         # With random crops we also apply horizontal flipping.
         image = tf.image.random_flip_left_right(image)
+        size_resize = int(self.config.getint('CROP_SIZE')*1.15)
+        image = tf.image.resize_with_pad(image, size_resize, size_resize)
         image = tf.image.random_crop(image, (self.config.getint('CROP_SIZE'), self.config.getint('CROP_SIZE'), 3))
         return image
         
@@ -46,7 +49,7 @@ class DataAugmentation():
             
         image = self.flip_random_crop(image)
         image = self.random_apply(self.color_jitter, image, p=0.8)
-        image = self.random_apply(self.color_drop, image, p=0.2)
+        image = self.random_apply(self.color_drop, image, p=0.2)        
         return image
     
     def sketch_augment(self, image):
@@ -58,6 +61,28 @@ class DataAugmentation():
             
         image = self.flip_random_crop(image)
         image = self.random_apply(self.color_jitter, image, p=0.8)
-        image = self.random_apply(self.color_drop, image, p=0.2)
+        image = self.random_apply(self.color_drop, image, p=0.2)        
         return image
+    
+    def image_augment(self, image):
+        # As discussed in the SimCLR paper, the series of augmentation
+        # transformations (except for random crops) need to be applied
+        # randomly to impose translational invariance.                
+        
+        image = self.flip_random_crop(image)        
+        image = self.random_apply(self.color_jitter, image, p=0.8)
+        image = self.random_apply(self.color_drop, image, p=0.2)
+        image = tf.expand_dims(image, axis = 0)
+        image = tfa.image.random_cutout(image, (14,14), constant_values= 0)
+        image = tf.squeeze(image, axis = 0)
+        return image
+    
+    def get_augmentation_fun(self):
+        if self.config.get('DATASET') == 'QD' :
+            return self.sketch_augment
+        
+        if self.config.get('DATASET') == 'IMAGENET' :
+            return self.image_augment
+        
+        return None 
     

@@ -29,6 +29,7 @@ class SketchBYOL(tf.keras.Model):
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
         x = inputs / 127.5 - 1
         #bkbone = resnet.ResNetBackbone([2,2], [64,128])
+        #This is a ResNet-34
         bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512])
         #bkbone = simple.Backbone()
         x = bkbone(x)   
@@ -125,10 +126,8 @@ class SketchBYOL(tf.keras.Model):
     def fit_byol(self, data, epochs):
         #dist_dataset = self.strategy.experimental_distribute_dataset(data)        
         for epoch in range(epochs) :
-            for step, batch in enumerate(data) :                
-                #loss = self.dist_train_step(dist_batch)
-                loss = self.train_step_byol(batch)
-                    
+            for step, batch in enumerate(data) :                                
+                loss = self.train_step_byol(batch)                    
                 #update weights            
                 target_encoder_w = self.target_encoder.get_weights()
                 online_encoder_w = self.online_encoder.get_weights()
@@ -136,7 +135,7 @@ class SketchBYOL(tf.keras.Model):
                 #it seems better to set tau = 0.99
                 tau = 0.99
                 for i in range(len(online_encoder_w)):
-                    target_encoder_w[i] = tau * target_encoder_w[i] + (1-tau) * online_encoder_w[i]  
+                    target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
                 self.target_encoder.set_weights(target_encoder_w)
                 if (step + 1) %  10 == 0 :
                     print('step : {} loss {}'.format(step + 1,loss))
