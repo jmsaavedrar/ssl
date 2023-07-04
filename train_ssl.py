@@ -59,7 +59,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type = str, required = True)    
     parser.add_argument('-model', type = str, required = True)
+    parser.add_argument('-gpu', type = int, required = False)
     args = parser.parse_args()
+    gpu_id = 0
+    if not args.gpu is None :
+        gpu_id = args.gpu    
     config_file = args.config
     ssl_model_name = args.model
     assert os.path.exists(config_file), '{} does not exist'.format(config_file)        
@@ -122,20 +126,19 @@ if __name__ == '__main__':
         )
           
         # Compile model and start training.
-        if ssl_model_name == 'SIMSIAM' :
-            ssl_model = simsiam.SketchSimSiam(config_data, config_model)
-            ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-            history = ssl_model.fit(ssl_ds, 
-                              epochs=config_model.getint('EPOCHS'), 
-                              callbacks=[early_stopping])
-            
-        if ssl_model_name == 'BYOL' :
-            ssl_model = byol.SketchBYOL(config_data, config_model)
-            ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-            history = ssl_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
-            
-        
-          
+        with tf.device('/device:GPU:{}'.format(gpu_id)) :
+            if ssl_model_name == 'SIMSIAM' :
+                ssl_model = simsiam.SketchSimSiam(config_data, config_model)
+                ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+                history = ssl_model.fit(ssl_ds, 
+                                  epochs=config_model.getint('EPOCHS'), 
+                                  callbacks=[early_stopping])
+                
+            if ssl_model_name == 'BYOL' :
+                ssl_model = byol.SketchBYOL(config_data, config_model)
+                ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+                history = ssl_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
+                              
         #predicting
                     
         #hisitory = simsiam.evaluate(ssl_ds)
