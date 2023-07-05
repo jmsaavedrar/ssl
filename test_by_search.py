@@ -86,8 +86,8 @@ class SSearch():
             image[:, i * size:(i + 1) * size, :] = self.data[pos,:,:,:]
         return image
        
-    
-    def get_dataset(self):
+
+    def get_dataset_name(self):
         return self.config_data.get('DATASET')     
 
 if __name__ == '__main__' :
@@ -103,14 +103,14 @@ if __name__ == '__main__' :
     ssearch.load_data()
     ssearch.compute_features()
     idxs = np.random.randint(1000, size = 10)
-    dataset = ssearch.get_dataset()
-    result_dir = os.path.join('results', ssl_model_name)
+    dataset_name = ssearch.get_dataset_name()
+    result_dir = os.path.join('results', dataset_name, ssl_model_name)
     if not os.path.exists(result_dir) :
         os.makedirs(result_dir)
         
     for idx in idxs :
         rimage =  ssearch.visualize(idx)
-        fname = 'result_{}_{}_{}.png'.format(dataset, ssl_model_name, idx)
+        fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
         fname = os.path.join(result_dir,fname)
         io.imsave(fname, rimage)
         print('result saved at {}'.format(fname))
