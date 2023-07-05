@@ -63,8 +63,9 @@ class SSearch():
         if self.config_data.get('DATASET') == 'IMAGENET' :       
             ds = tfds.load('imagenet1k')    
             
-        ds_test = ds['test'].shuffle(1024).batch(24)
+        ds_test = ds['test']
         ds_test = ds_test.map(lambda image : imagenet_map_func(image, self.config_data.getint('CROP_SIZE') ))
+        ds_test = ds_test.shuffle(1024).batch(24)
         ds_test = ds_test.take(1)
         for sample in ds_test :
             self.data = sample.numpy()
