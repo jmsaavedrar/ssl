@@ -32,8 +32,8 @@ def mnist_map_func(image, crop_size):
 def imagenet_map_func(image, crop_size):
     image = image['image']    
     #image = tf.image.grayscale_to_rgb(image) 
-    #size = int(crop_size * 1.15)
-    image = tf.image.resize_with_pad(image, 256, 256)
+    size = int(crop_size * 1.15)
+    image = tf.image.resize_with_pad(image, size, size)
     image = tf.image.random_crop(image, size = [crop_size, crop_size, 3])
     image = tf.cast(image, tf.uint8) 
     return image    
@@ -65,7 +65,7 @@ class SSearch():
             
         ds_test = ds['test']
         ds_test = ds_test.map(lambda image : imagenet_map_func(image, self.config_data.getint('CROP_SIZE') ))
-        ds_test = ds_test.shuffle(1024).batch(24)
+        ds_test = ds_test.shuffle(1024).batch(1000)
         ds_test = ds_test.take(1)
         for sample in ds_test :
             self.data = sample.numpy()
