@@ -9,15 +9,16 @@ QuickDraw datasets, so you need the following repository
 
 """
 
-
 import sys
 import socket
-ip = socket.gethostbyname(socket.gethostname())
-## you can modify this part to set a local path for the dataset project  
+#---------------------------------------------------------------------------
+## you can modify this part to set a local path for the dataset project
+ip = socket.gethostbyname(socket.gethostname()) 
 if ip == '192.168.20.62' :
     sys.path.insert(0,'/home/DIINF/vchang/jsaavedr/Research/git/datasets')
 else :
     sys.path.insert(0,'/home/jsaavedr/Research/git/datasets')
+#---------------------------------------------------------------------------
 import os
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -43,6 +44,33 @@ def visualize_data(ds_1, ds_2) :
         plt.waitforbuttonpress(1)
     plt.show()
 
+def do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir):
+    
+    lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(initial_learning_rate=0.03, 
+                                                              decay_steps = config_model.getint('STEPS'))
+    # Create an early stopping callback.
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor="loss", 
+                                                      patience=5, 
+                                                      restore_best_weights=True)
+    
+    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+                                                                   filepath= os.path.join(model_dir, 'ckp', 'model_{epoch:03d}.h5'),
+                                                                   save_weights_only=True,                                                                   
+                                                                   save_freq = 'epoch',  )
+    history = None
+    if ssl_model_name == 'SIMSIAM' :
+        ssl_model = simsiam.SketchSimSiam(config_data, config_model)
+        ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+        history = ssl_model.fit(ssl_ds,
+                                epochs=config_model.getint('EPOCHS'),
+                                callbacks=[early_stopping, model_checkpoint_callback])
+    if ssl_model_name == 'BYOL' :
+        ssl_model = byol.SketchBYOL(config_data, config_model)
+        ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+        history = ssl_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'),
+                                     os.path.join(model_dir, 'ckp'))
+    
+    return history, ssl_model
 #---------------------------------------------------------------------------------------
 def ssl_map_func(image, daug_func):
     image = image['image']    
@@ -58,8 +86,8 @@ AUTO = tf.data.AUTOTUNE
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type = str, required = True)    
-    parser.add_argument('-model', type = str, required = True)
-    parser.add_argument('-gpu', type = int, required = False)
+    parser.add_argument('-model', type = str, required = True)  
+    parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
     args = parser.parse_args()
     gpu_id = 0
     if not args.gpu is None :
@@ -77,11 +105,13 @@ if __name__ == '__main__':
     config_data = config['DATA']
     ds = None
     #
-    if config_data.get('DATASET') == 'QD' :        
+    dataset_name = config_data.get('DATASET')
+    if dataset_name == 'QD' :        
         ds = tfds.load('tfds_qd')
-    if config_data.get('DATASET') == 'IMAGENET' :        
-        data_dir ='/mnt/hd-data/Datasets/imagenet/tfds'            
-        ds = tfds.load('imagenet1k', data_dir = data_dir)
+    if dataset_name == 'IMAGENET' :        
+        #data_dir ='/mnt/hd-data/Datasets/imagenet/tfds'            
+        #ds = tfds.load('imagenet1k', data_dir = data_dir)
+        ds = tfds.load('imagenet1k')
         
     daug = aug.DataAugmentation(config_data)    
     #loading dataset example cifar
@@ -111,45 +141,38 @@ if __name__ == '__main__':
     if VISUALIZE :
         import matplotlib.pyplot as plt
         visualize_data(ssl_ds_one, ssl_ds_two)
-    else :
+    else :   
+        #----------------------------------------------------------------------------------
+        model_dir =  config_model.get('MODEL_DIR')
+        model_dir = os.path.join(model_dir, dataset_name, ssl_model_name)
+        if not os.path.exists(os.path.dirname(model_dir)) :
+            os.makedirs(os.path.join(model_dir, 'ckp'))
+            os.makedirs(os.path.join(model_dir, 'model'))
+            print('--- {} was created'.format(os.path.dirname(model_dir)))
+        #----------------------------------------------------------------------------------
+        tf.debugging.set_log_device_placement(True)   
         # Create a cosine decay learning scheduler.
-        num_training_samples = len(ds_train)
-        
+        num_training_samples = len(ds_train)        
         steps = config_model.getint('EPOCHS') * (num_training_samples // config_model.getint('BATCH_SIZE'))
-        config_model['STEPS'] = str(steps)
-        lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(
-            initial_learning_rate=0.03, decay_steps = steps)
-          
-        # Create an early stopping callback.
-        early_stopping = tf.keras.callbacks.EarlyStopping(
-            monitor="loss", patience=5, restore_best_weights=True
-        )
-          
+        config_model['STEPS'] = str(steps)  
         # Compile model and start training.
-        with tf.device('/device:GPU:{}'.format(gpu_id)) :
-            if ssl_model_name == 'SIMSIAM' :
-                ssl_model = simsiam.SketchSimSiam(config_data, config_model)
-                ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-                history = ssl_model.fit(ssl_ds, 
-                                  epochs=config_model.getint('EPOCHS'), 
-                                  callbacks=[early_stopping])
-                
-            if ssl_model_name == 'BYOL' :
-                ssl_model = byol.SketchBYOL(config_data, config_model)
-                ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-                history = ssl_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'))
+        if gpu_id >= 0 :
+            with tf.device('/device:GPU:{}'.format(gpu_id)) :
+                history, ssl_model = do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir)                
+        else :            
+            gpus = tf.config.list_logical_devices('GPU')
+            strategy = tf.distribute.MirroredStrategy(gpus)
+            with strategy.scope() :
+                history, ssl_model = do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir)
                               
-        #predicting
-                    
+        #predicting                    
         #hisitory = simsiam.evaluate(ssl_ds)
         # Visualize the training progress of the model.
         # Extract the backbone ResNet20.
         #saving model
         # print('saving model')
-        model_file =config_model.get('MODEL_NAME')
-        if not os.path.exists(os.path.dirname(model_file)) :
-            os.makedirs(os.path.dirname(model_file))
-            print('--- {} was created'.format(os.path.dirname(model_file)))
+        model_file = os.path.join(model_dir, 'model', 'model')
+        
         ssl_model.save_weights(model_file)
         print("model saved to {}".format(model_file))        
     #
