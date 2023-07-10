@@ -23,7 +23,7 @@ class SketchBYOL(tf.keras.Model):
         self.step = 0
         
     def get_input_shape(self):
-        return (None, self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS)      
+        return (self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS)      
                 
     def get_encoder(self):
         # Input and backbone.

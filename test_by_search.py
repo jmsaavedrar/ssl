@@ -48,7 +48,8 @@ class SSearch():
                 
         if  model  == 'SIMSIAM' :
             ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)
-            ssl_model.build(ssl_model.get_input_shape())        
+            ssl_model(ssl_model.get_input_shape())
+            ssl_model.summary()        
             #ssl_model.load_weights(self.config_model.get('MODEL_NAME'))
             ssl_model.load_weights(self.config_model.get('CKP_FILE'))
             self.model= ssl_model.encoder
