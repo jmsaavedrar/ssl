@@ -45,10 +45,10 @@ class SSearch():
         self.config_model = config[model]
         self.config_data = config['DATA']
         self.model = None
-                
+        CROP_SIZE = self.config_data['CROP_SIZE']
         if  model  == 'SIMSIAM' :
             ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)
-            ssl_model(ssl_model.get_input_shape())
+            ssl_model((CROP_SIZE, CROP_SIZE, 3))
             ssl_model.summary()        
             #ssl_model.load_weights(self.config_model.get('MODEL_NAME'))
             ssl_model.load_weights(self.config_model.get('CKP_FILE'))
