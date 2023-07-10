@@ -84,7 +84,8 @@ class SketchBYOL(tf.keras.Model):
     @property
     def metrics(self):
         return [self.loss_tracker]        
-        
+    
+    @tf.function    
     def train_step_byol(self, batch):
             ds_one, ds_two = batch
             z1_target = self.target_encoder(ds_one)
@@ -122,7 +123,7 @@ class SketchBYOL(tf.keras.Model):
     #     print('total {}'.format(total))
     #     return total / self.strategy.num_replicas_in_sync 
       
-    @tf.function  
+      
     def fit_byol(self, data, epochs, ckp_dir):
         #dist_dataset = self.strategy.experimental_distribute_dataset(data)        
         for epoch in range(epochs) :
