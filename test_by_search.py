@@ -45,7 +45,7 @@ class SSearch():
         self.config_model = config[model]
         self.config_data = config['DATA']
         self.model = None
-        CROP_SIZE = self.config_data['CROP_SIZE']
+        CROP_SIZE = self.config_data.getint('CROP_SIZE')
         if  model  == 'SIMSIAM' :
             ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)
             ssl_model(tf.keras.Input((CROP_SIZE, CROP_SIZE, 3)))                    
