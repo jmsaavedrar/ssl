@@ -67,8 +67,9 @@ def do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir):
     if ssl_model_name == 'BYOL' :
         ssl_model = byol.SketchBYOL(config_data, config_model)
         ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
-        history = ssl_model.fit_byol(ssl_ds, epochs=config_model.getint('EPOCHS'),
-                                     os.path.join(model_dir, 'ckp'))
+        history = ssl_model.fit_byol(ssl_ds, 
+                                     epochs = config_model.getint('EPOCHS'),
+                                     ckp_dir = os.path.join(model_dir, 'ckp'))
     
     return history, ssl_model
 #---------------------------------------------------------------------------------------
