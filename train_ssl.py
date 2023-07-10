@@ -146,7 +146,7 @@ if __name__ == '__main__':
         #----------------------------------------------------------------------------------
         model_dir =  config_model.get('MODEL_DIR')
         model_dir = os.path.join(model_dir, dataset_name, ssl_model_name)
-        if not os.path.exists(os.path.dirname(model_dir)) :
+        if not os.path.exists(model_dir) :
             os.makedirs(os.path.join(model_dir, 'ckp'))
             os.makedirs(os.path.join(model_dir, 'model'))
             print('--- {} was created'.format(os.path.dirname(model_dir)))
