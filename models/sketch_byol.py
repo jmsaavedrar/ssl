@@ -22,7 +22,8 @@ class SketchBYOL(tf.keras.Model):
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
         self.step = 0
         
-        
+    def get_input_shape(self):
+        return (self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS)      
                 
     def get_encoder(self):
         # Input and backbone.
