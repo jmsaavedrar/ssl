@@ -147,7 +147,7 @@ class SketchBYOL(tf.keras.Model):
             #pathfile = os.path.join(ckp_dir, '{:03d}.h5'.format(epoch + 1))
             pathfile = os.path.join(ckp_dir, 'ckp')
             print(pathfile)            
-            self.save_weights(pathfile, format = 'tf', overwrite = True)
+            self.save_weights(pathfile, save_format = 'tf', overwrite = True)
             print('---- epoch : {} ---- (saved)'.format(epoch + 1), flush = True)
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
