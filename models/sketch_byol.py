@@ -127,10 +127,13 @@ class SketchBYOL(tf.keras.Model):
       
     def fit_byol(self, data, epochs, ckp_dir):
         #dist_dataset = self.strategy.experimental_distribute_dataset(data)        
-        for epoch in range(epochs) :          
-              
-            #for step, batch in enumerate(data):
-            for step  in range(1000) :                         
+        for epoch in range(epochs) : 
+            iterator = tf.data.Iterator(data)
+                         
+            for step in range(1000) :
+                batch = iterator.get_next()
+                loss = 0 
+#             for step, batch in enumerate(data):                                     
 #                 loss = self.train_step_byol(batch)                    
 #                 #update weights            
 #                 target_encoder_w = self.target_encoder.get_weights()
@@ -140,8 +143,7 @@ class SketchBYOL(tf.keras.Model):
 #                 tau = 0.99
 #                 for i in range(len(online_encoder_w)):
 #                     target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
-#                 self.target_encoder.set_weights(target_encoder_w)
-                loss = 0
+#                 self.target_encoder.set_weights(target_encoder_w)            
                 if (step + 1) %  10 == 0 :
                     print('step : {} loss {}'.format(step + 1, loss), flush = True)
             pathfile = os.path.join(ckp_dir, '{:03d}'.format(epoch + 1))            
