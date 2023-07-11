@@ -128,20 +128,21 @@ class SketchBYOL(tf.keras.Model):
     def fit_byol(self, data, epochs, ckp_dir):
         #dist_dataset = self.strategy.experimental_distribute_dataset(data)        
         for epoch in range(epochs) :    
-            loss = 0                      
+            progbar = tf.keras.utils.Progbar(len(data))
             for step, batch in enumerate(data):                                     
-#                 loss = self.train_step_byol(batch)                    
-#                 #update weights            
-#                 target_encoder_w = self.target_encoder.get_weights()
-#                 online_encoder_w = self.online_encoder.get_weights()
-#                 #tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
-#                 #it seems better to set tau = 0.99
-#                 tau = 0.99
-#                 for i in range(len(online_encoder_w)):
-#                     target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
-#                 self.target_encoder.set_weights(target_encoder_w)            
+                loss = self.train_step_byol(batch)                    
+                #update weights            
+                target_encoder_w = self.target_encoder.get_weights()
+                online_encoder_w = self.online_encoder.get_weights()
+                #tau = (np.cos(np.pi* ((self.step + 1)/self.STEPS)) + 1) / 2
+                #it seems better to set tau = 0.99
+                tau = 0.99
+                for i in range(len(online_encoder_w)):
+                    target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
+                self.target_encoder.set_weights(target_encoder_w)            
                 if (step + 1) %  10 == 0 :
                     print('step : {} loss {}'.format(step + 1, loss), flush = True)
+                progbar.update(step)
             pathfile = os.path.join(ckp_dir, '{:03d}'.format(epoch + 1))            
             print(pathfile)            
             self.save_weights(pathfile, save_format = 'tf', overwrite = True)
