@@ -54,7 +54,7 @@ def do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir):
                                                       restore_best_weights=True)
     
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-                                                                   filepath= os.path.join(model_dir, 'ckp', 'model_{epoch:03d}.h5'),
+                                                                   filepath= os.path.join(model_dir, 'ckp', 'ckp_{epoch:03d}'),
                                                                    save_weights_only=True,                                                                   
                                                                    save_freq = 'epoch',  )
     history = None
