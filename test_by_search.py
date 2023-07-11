@@ -23,7 +23,7 @@ import tensorflow_datasets as tfds
 import argparse
 #---------- dataset builder --------------------  
 
-def mnist_map_func(image, crop_size):
+def ssl_map_func(image, crop_size):
     image = image['image']    
     image = tf.image.grayscale_to_rgb(image) 
     image = tf.image.resize(image, (crop_size,crop_size))
@@ -59,13 +59,16 @@ class SSearch():
 
     def load_data(self):
         ds = None
+        fn = None
         if self.config_data.get('DATASET') == 'QD' :       
             ds = tfds.load('tfds_qd')
+            fn = ssl_map_func
         if self.config_data.get('DATASET') == 'IMAGENET' :       
-            ds = tfds.load('imagenet1k')    
+            ds = tfds.load('imagenet1k')
+            fn = imagenet_map_func    
             
         ds_test = ds['test']
-        ds_test = ds_test.map(lambda image : imagenet_map_func(image, self.config_data.getint('CROP_SIZE') ))
+        ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
         ds_test = ds_test.shuffle(1024).batch(1000)
         ds_test = ds_test.take(1)
         for sample in ds_test :
