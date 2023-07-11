@@ -142,7 +142,7 @@ class SketchBYOL(tf.keras.Model):
                     target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
                 self.target_encoder.set_weights(target_encoder_w)
                 if (step + 1) % 10 == 0:            
-                    progbar.update(curent = step, values = [('loss', loss)])
+                    progbar.update(current = step, values = [('loss', loss)])
             pathfile = os.path.join(ckp_dir, '{:03d}'.format(epoch + 1))
             self.save_weights(pathfile, save_format = 'tf', overwrite = True)
             tf.print('---- epoch : {} ---- (saved)'.format(epoch + 1), flush = True)
