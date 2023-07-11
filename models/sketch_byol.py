@@ -139,6 +139,7 @@ class SketchBYOL(tf.keras.Model):
 #                 for i in range(len(online_encoder_w)):
 #                     target_encoder_w[i] = tau * target_encoder_w[i] + (1 - tau) * online_encoder_w[i]  
 #                 self.target_encoder.set_weights(target_encoder_w)
+                loss = 0
                 if (step + 1) %  10 == 0 :
                     print('step : {} loss {}'.format(step + 1, loss), flush = True)            
             self.save_weights(os.path.join(ckp_dir, '{:03d}.h5'.format(epoch + 1)), overwrite = True)
