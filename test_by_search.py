@@ -44,21 +44,18 @@ class SSearch():
         config.read(configfile)
         self.config_model = config[model]
         self.config_data = config['DATA']
-        self.model = None
-        CROP_SIZE = self.config_data.getint('CROP_SIZE')
+        self.model = None        
         if  model  == 'SIMSIAM' :
-            ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)
-            ssl_model(tf.keras.Input((CROP_SIZE, CROP_SIZE, 3)))                    
-            #ssl_model.load_weights(self.config_model.get('MODEL_NAME'))
-            ssl_model.load_weights(self.config_model.get('CKP_FILE'))
+            ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)                                            
+            ssl_model.load_weights(self.config_model.get('CKP_FILE'))            
             self.model= ssl_model.encoder
         if  model  == 'BYOL' :
             ssl_model = byol.SketchBYOL(self.config_data, self.config_model)
-            ssl_model.build()        
-            #ssl_model.load_weights(self.config_model.get('MODEL_NAME'))
+            ssl_model.build()                    
             ssl_model.load_weights(self.config_model.get('CKP_FILE')) 
             self.model= ssl_model.online_encoder
-        assert not (self.model == None), '-- there is not a ssl model'        
+        assert not (self.model == None), '-- there is not a ssl model'
+        print('Model loaded OK', flush = True)            
 
     def load_data(self):
         ds = None
