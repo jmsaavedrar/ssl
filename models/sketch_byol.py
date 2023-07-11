@@ -145,7 +145,7 @@ class SketchBYOL(tf.keras.Model):
                     progbar.update(current = step, values = [('loss', loss)])
             pathfile = os.path.join(ckp_dir, '{:03d}'.format(epoch + 1))
             self.save_weights(pathfile, save_format = 'tf', overwrite = True)
-            tf.print('---- epoch : {} ---- (saved)'.format(epoch + 1), flush = True)
+            tf.print('---- epoch : {} ---- (saved)'.format(epoch + 1))
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
         
