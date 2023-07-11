@@ -97,24 +97,30 @@ if __name__ == '__main__' :
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type = str, required = True)    
     parser.add_argument('-model', type = str, required = True)
+    parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
     args = parser.parse_args()
+    gpu_id = 0
+    if not args.gpu is None :
+        gpu_id = args.gpu
     config_file = args.config
     ssl_model_name = args.model
     assert os.path.exists(config_file), '{} does not exist'.format(config_file)        
     assert ssl_model_name in ['BYOL', 'SIMSIAM'], '{} is not a valid model'.format(ssl_model_name)
-    ssearch = SSearch(config_file, ssl_model_name)
-    ssearch.load_data()
-    ssearch.compute_features()
-    idxs = np.random.randint(1000, size = 10)
-    dataset_name = ssearch.get_dataset_name()
-    result_dir = os.path.join('results', dataset_name, ssl_model_name)
-    if not os.path.exists(result_dir) :
-        os.makedirs(result_dir)
-        
-    for idx in idxs :
-        rimage =  ssearch.visualize(idx)
-        fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
-        fname = os.path.join(result_dir,fname)
-        io.imsave(fname, rimage)
-        print('result saved at {}'.format(fname))
+    if gpu_id >= 0 :
+        with tf.device('/device:GPU:{}'.format(gpu_id)) :
+            ssearch = SSearch(config_file, ssl_model_name)
+            ssearch.load_data()
+            ssearch.compute_features()
+            idxs = np.random.randint(1000, size = 10)
+            dataset_name = ssearch.get_dataset_name()
+            result_dir = os.path.join('results', dataset_name, ssl_model_name)
+            if not os.path.exists(result_dir) :
+                os.makedirs(result_dir)
+                
+            for idx in idxs :
+                rimage =  ssearch.visualize(idx)
+                fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
+                fname = os.path.join(result_dir,fname)
+                io.imsave(fname, rimage)
+                print('result saved at {}'.format(fname))
     
