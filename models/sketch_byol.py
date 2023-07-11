@@ -143,8 +143,10 @@ class SketchBYOL(tf.keras.Model):
 #                 self.target_encoder.set_weights(target_encoder_w)
                 loss = 0
                 if (step + 1) %  10 == 0 :
-                    print('step : {} loss {}'.format(step + 1, loss), flush = True)            
-            self.save_weights(os.path.join(ckp_dir, '{:03d}.h5'.format(epoch + 1)), overwrite = True)
+                    print('step : {} loss {}'.format(step + 1, loss), flush = True)
+            pathfile = os.path.join(ckp_dir, '{:03d}.h5'.format(epoch + 1))
+            print(pathfile)            
+            self.save_weights(pathfile, overwrite = True)
             print('---- epoch : {} ---- (saved)'.format(epoch + 1), flush = True)
 #                self.step = self.step + 1 
                 #return {"loss": self.loss_tracker.result()}
