@@ -8,13 +8,13 @@ To make the data loading easy, we use [TFDS](https://www.tensorflow.org/datasets
 We have prepared a subset of QuickDraw with 1100 instances per class. You can download it from [here](https://www.dropbox.com/s/eq3vzu65elii62i/tfds_qd.tar).
 You should unpack it into  $HOME/tensorflow_datasets (by default, python will look the datasets there). However, you can put the data into another folder, but you'll need to specify the data_dir in the tfds.load function in the [train_ssl.py](train_ssl.py) file.
 
-In addition, we add configuration files that may facilitate experimentation. In our example you can use [qd.ini](config/qd.ini)
+In addition, we add configuration files that may facilitate experimentation. In our example we use [qd.ini](config/qd.ini).
 
 ## Training
-train_ssl -config config/qd.ini -model SIMSIAM -gpu 0
+python train_ssl.py -config config/qd.ini -model SIMSIAM -gpu 0
   
 ## Testing
-test_by_search -config config/qd.ini -model SIMSIAM -gpu 0
+python test_by_search.py -config config/qd.ini -model SIMSIAM -gpu 0
 
 For testing, you should indicate the chekpoint in the configuration file (see CKP_FILE). 
 
