@@ -16,7 +16,7 @@ python train_ssl.py -config config/qd.ini -model SIMSIAM -gpu 0
 ## Testing
 python test_by_search.py -config config/qd.ini -model SIMSIAM -gpu 0
 
-For testing, you should indicate the chekpoint in the configuration file (see CKP_FILE). 
+For testing, you should indicate the chekpoint in the configuration file (see CKP_FILE). Note that the testing process will create images with the results.
 
 
 # Dependencies
