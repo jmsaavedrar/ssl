@@ -246,7 +246,7 @@ class ResNetFeatureVector(tf.keras.Model):
     #does not need number_of_classes
     def __init__(self, block_sizes, filters, use_bottleneck = False, se_factor = 0, kernel_regularizer = None, **kwargs) :
         super(ResNetFeatureVector, self).__init__(**kwargs)
-        self.backbone = ResNetBackbone(block_sizes, filters, use_bottleneck, kernel_regularizer = None, se_factor, name = 'backbone')                            
+        self.backbone = ResNetBackbone(block_sizes, filters, use_bottleneck, kernel_regularizer = None, se_factor = se_factor, name = 'backbone')                            
         self.avg_pool = tf.keras.layers.GlobalAveragePooling2D()                             
         
     def call(self, inputs, training):
