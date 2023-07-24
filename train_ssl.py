@@ -61,6 +61,7 @@ def do_training(ssl_model_name, config_data, config_model, ssl_ds, model_dir):
     if ssl_model_name == 'SIMSIAM' :
         ssl_model = simsiam.SketchSimSiam(config_data, config_model)
         ssl_model.compile(optimizer=tf.keras.optimizers.SGD(lr_decayed_fn, momentum=0.9))
+        #it is possible to load initial weights using load_wights ...
         history = ssl_model.fit(ssl_ds,
                                 epochs=config_model.getint('EPOCHS'),
                                 callbacks=[early_stopping, model_checkpoint_callback])
@@ -145,6 +146,8 @@ if __name__ == '__main__':
     else :   
         #----------------------------------------------------------------------------------
         model_dir =  config_model.get('MODEL_DIR')
+        if not config_model.get('EXP_CODE') is None :
+            model_dir = os.path.join(model_dir, config_model.get('EXP_CODE'))
         model_dir = os.path.join(model_dir, dataset_name, ssl_model_name)
         if not os.path.exists(model_dir) :
             os.makedirs(os.path.join(model_dir, 'ckp'))

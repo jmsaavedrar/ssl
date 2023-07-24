@@ -31,7 +31,7 @@ class SketchBYOL(tf.keras.Model):
         x = inputs / 127.5 - 1
         #bkbone = resnet.ResNetBackbone([2,2], [64,128])
         #This is a ResNet-34
-        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512])
+        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512], kernel_regularizer = tf.keras.regularizers.l2(self.WEIGHT_DECAY))
         #bkbone = simple.Backbone()
         x = bkbone(x)   
         # Projection head.

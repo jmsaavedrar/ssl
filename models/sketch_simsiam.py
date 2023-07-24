@@ -24,7 +24,7 @@ class SketchSimSiam(tf.keras.Model):
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
         x = inputs / 127.5 - 1
         #the backbone can be an input to the clas SimSiam
-        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512])
+        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512], kernel_regularizer = tf.keras.regularizers.l2(self.WEIGHT_DECAY))
         #bkbone = simple.Backbone()
         x = bkbone(x)   
         # Projection head.
