@@ -82,6 +82,7 @@ class SSearch():
     def compute_map(self):
         labels_ranking = self.labels[self.sorted_pos]
         labels = np.reshape(labels_ranking[:, 0], (-1, 1))
+        np.replicate(labels, labels_ranking.shape[1], axis = 1)
         pos_all_queries = np.where(labels == labels_ranking[:, 1:])
         n_queries = labels_ranking.shape[0]
         AP = 0
