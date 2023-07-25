@@ -83,12 +83,13 @@ class SSearch():
         labels_ranking = self.labels[self.sorted_pos]
         print(labels_ranking.shape)
         labels = np.reshape(labels_ranking[:, 0], (-1, 1))
+        print(labels.shape)
         labels = np.repeat(labels, labels_ranking.shape[1] - 1, axis = 1)
         pos_all_queries = np.where(labels == labels_ranking[:, 1:])
         n_queries = labels_ranking.shape[0]
         AP = 0
         for pos_query in pos_all_queries :
-            recall = np.arange(1, labels_ranking.shape[1])
+            recall = np.arange(1, len(pos_query))
             pr = recall / pos_query
             AP = AP + np.mean(pr)
         mAP = AP / n_queries
