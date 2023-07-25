@@ -89,7 +89,7 @@ class SSearch():
         n_queries = labels_ranking.shape[0]
         AP = 0
         for pos_query in pos_all_queries :
-            recall = np.arange(1, len(pos_query))
+            recall = np.arange(1, len(pos_query) + 1)
             pr = recall / pos_query
             AP = AP + np.mean(pr)
         mAP = AP / n_queries
