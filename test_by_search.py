@@ -52,8 +52,7 @@ class SSearch():
             ssl_model.load_weights(self.config_model.get('CKP_FILE'))            
             self.model= ssl_model.encoder
         if  model  == 'BYOL' :
-            ssl_model = byol.SketchBYOL(self.config_data, self.config_model)
-            ssl_model.build()
+            ssl_model = byol.SketchBYOL(self.config_data, self.config_model)            
             ssl_model.load_weights(self.config_model.get('CKP_FILE'))
             self.model= ssl_model.online_encoder
         assert not (self.model == None), '-- there is not a ssl model'
@@ -137,16 +136,16 @@ if __name__ == '__main__' :
             ssearch.compute_features()
             mAP  = ssearch.compute_map()
             print('mAP = {}'.format(mAP))       
-            idxs = np.random.randint(datasize, size = 10)
-            dataset_name = ssearch.get_dataset_name()
-            result_dir = os.path.join('results', dataset_name, ssl_model_name)
-            if not os.path.exists(result_dir) :
-                os.makedirs(result_dir)
-                 
-            for idx in idxs :
-                rimage =  ssearch.visualize(idx)
-                fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
-                fname = os.path.join(result_dir,fname)
-                io.imsave(fname, rimage)
-                print('result saved at {}'.format(fname))
+#             idxs = np.random.randint(datasize, size = 10)
+#             dataset_name = ssearch.get_dataset_name()
+#             result_dir = os.path.join('results', dataset_name, ssl_model_name)
+#             if not os.path.exists(result_dir) :
+#                 os.makedirs(result_dir)
+#                  
+#             for idx in idxs :
+#                 rimage =  ssearch.visualize(idx)
+#                 fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
+#                 fname = os.path.join(result_dir,fname)
+#                 io.imsave(fname, rimage)
+#                 print('result saved at {}'.format(fname))
      
