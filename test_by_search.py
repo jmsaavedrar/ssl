@@ -142,7 +142,7 @@ class SSearch():
         return self.config_data.get('DATASET')
     
     def get_exp_id(self):
-        return self.config_data.get('EXP_CODE')
+        return self.config_model.get('EXP_CODE')
     
     def get_dataset_size(self):
         return len(self.labels)     
