@@ -113,8 +113,7 @@ class SSearch():
         self.features = []
         self.labels = []
         for batch in self.ds_data :          
-            images = batch[0].numpy()
-            print(images)
+            images = batch[0].numpy()            
             labels = batch[1].numpy()                
             feats = self.model.predict(images)
             self.features.append(feats)            
@@ -172,9 +171,9 @@ if __name__ == '__main__' :
             ssearch.load_data()
             ssearch.compute_features()
             ssearch.compute_sim()
-            #mAP  = ssearch.compute_map()
-            #print('mAP \t = {}'.format(mAP))
-            #print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
+            mAP  = ssearch.compute_map()
+            print('mAP \t = {}'.format(mAP))
+            print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
 #           idxs = np.random.randint(datasize, size = 10)
 #             dataset_name = ssearch.get_dataset_name()
 #             result_dir = os.path.join('results', dataset_name, ssl_model_name)
