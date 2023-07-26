@@ -150,7 +150,7 @@ if __name__ == '__main__' :
     parser.add_argument('-config', type = str, required = True)    
     parser.add_argument('-model', type = str, required = True)
     parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
-    datasize = 1000
+    #datasize = 1000
     args = parser.parse_args()
     gpu_id = 0
     if not args.gpu is None :
@@ -161,7 +161,7 @@ if __name__ == '__main__' :
     #assert ssl_model_name in ['BYOL', 'SIMSIAM'], '{} is not a valid model'.format(ssl_model_name)
     if gpu_id >= 0 :
         with tf.device('/device:GPU:{}'.format(gpu_id)) :
-            ssearch = SSearch(config_file, ssl_model_name, size = datasize)
+            ssearch = SSearch(config_file, ssl_model_name)
             ssearch.load_data()
             ssearch.compute_features()
             ssearch.compute_sim()
