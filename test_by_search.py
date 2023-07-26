@@ -175,7 +175,7 @@ if __name__ == '__main__' :
             if args.save_sample : 
                 idxs = np.random.randint(datasize, size = 10)
                 dataset_name = ssearch.get_dataset_name()
-                exp_id = ssearch.get_exṕ_id()
+                exp_id = ssearch.get_exp_id()
                 result_dir = os.path.join('results', exp_id, dataset_name, ssl_model_name)
                 if not os.path.exists(result_dir) :
                     os.makedirs(result_dir)
