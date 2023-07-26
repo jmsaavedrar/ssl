@@ -90,17 +90,16 @@ class SSearch():
         print(labels.shape)
         print(labels_ranking.shape)        
         n_queries = labels_ranking.shape[0]
-        AP = 0
-        for i in np.arange(n_queries) :
-            
+        AP = []
+        for i in np.arange(n_queries) :            
             pos_query = np.where(labels_ranking[i, :] == labels[i])[0]
             recall = np.arange(1, len(pos_query) + 1)
             pr = recall / pos_query
             AP_q = np.mean(pr)
-            print(AP_q)
-            AP = AP + AP_q 
-            
-        mAP = AP / n_queries
+            AP.append[AP_q]
+            print('{} -> mAP = {}'.format(len(pos_query), AP_q))
+                         
+        mAP = np.mean(np.array(AP)) 
         return mAP
         
         return mAP
