@@ -125,10 +125,13 @@ class SSearch():
     
     def compute_sim(self):        
         feats = self.features
+        print(feats.shape)
         norm = np.linalg.norm(feats, ord = 2, axis = 1, keepdims = True)
         feats = feats / norm
         sim = np.matmul(feats, np.transpose(feats))
+        print(sim.shape)
         self.sorted_pos = np.argsort(-sim, axis = 1)
+        print(self.sorted_pos.shape)
          
 
 
@@ -168,9 +171,9 @@ if __name__ == '__main__' :
             ssearch.load_data()
             ssearch.compute_features()
             ssearch.compute_sim()
-            mAP  = ssearch.compute_map()
-            print('mAP \t = {}'.format(mAP))
-            print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
+            #mAP  = ssearch.compute_map()
+            #print('mAP \t = {}'.format(mAP))
+            #print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
 #           idxs = np.random.randint(datasize, size = 10)
 #             dataset_name = ssearch.get_dataset_name()
 #             result_dir = os.path.join('results', dataset_name, ssl_model_name)
