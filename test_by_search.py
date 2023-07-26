@@ -77,7 +77,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.batch(self.config_model.get('BATCH_SIZE'))
+        self.ds_data = ds_test.batch(self.config_model.getint('BATCH_SIZE'))
         #ds_test = ds_test.take(1)               
               
     
