@@ -141,6 +141,9 @@ class SSearch():
     def get_dataset_name(self):
         return self.config_data.get('DATASET')
     
+    def get_exp_id(self):
+        return self.config_data.get('EXP_CODE')
+    
     def get_dataset_size(self):
         return len(self.labels)     
 
@@ -149,6 +152,7 @@ if __name__ == '__main__' :
     parser.add_argument('-config', type = str, required = True)    
     parser.add_argument('-model', type = str, required = True)
     parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
+    parser.add_argument('-save_sample', type = bool, required = False, default = False) # gpu = -1 set for using all gpus
     #datasize = 1000
     args = parser.parse_args()
     gpu_id = 0
@@ -168,10 +172,11 @@ if __name__ == '__main__' :
             print('mAP \t = {}'.format(mAP))
             datasize = ssearch.get_dataset_size()
             print('dataset size \t = {}'.format(datasize))
-            if SAVE_SAMPLE_RESULTS :       
+            if args.save_sample : 
                 idxs = np.random.randint(datasize, size = 10)
                 dataset_name = ssearch.get_dataset_name()
-                result_dir = os.path.join('results', dataset_name, ssl_model_name)
+                exp_id = ssearch.get_exṕ_id()
+                result_dir = os.path.join('results', exp_id, dataset_name, ssl_model_name)
                 if not os.path.exists(result_dir) :
                     os.makedirs(result_dir)
                         
