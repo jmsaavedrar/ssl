@@ -78,7 +78,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.batch(1024)
+        self.ds_data = ds_test.batch(1024).take(10)
         #ds_test = ds_test.take(1)               
               
     
@@ -118,7 +118,8 @@ class SSearch():
             feats = self.model.predict(images)
             self.features.append(feats)            
             self.labels.append(labels)
-            
+        print(self.features.shape)
+        print(self.labels.shape)    
         self.features = np.squeeze(np.array(self.features), axis = 0)                
         self.labels = np.squeeze(np.array(self.labels), axis = 0)
         
