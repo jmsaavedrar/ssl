@@ -23,21 +23,23 @@ import argparse
 #---------- dataset builder --------------------  
 
 def ssl_map_func(image_label, crop_size):
-    image = image_label['image']
-    label = image_label['label']    
+    image = image_label['image']    
     image = tf.image.grayscale_to_rgb(image) 
     image = tf.image.resize(image, (crop_size,crop_size))
-    return image, label
+    return image
         
 def imagenet_map_func(image_label, crop_size):
     image = image_label['image']
-    label = image_label['label']    
     #image = tf.image.grayscale_to_rgb(image) 
     size = int(crop_size * 1.15)
     image = tf.image.resize_with_pad(image, size, size)
     image = tf.image.random_crop(image, size = [crop_size, crop_size, 3])
     image = tf.cast(image, tf.uint8) 
-    return image, label    
+    return image    
+
+
+def map_label_func(image_label):
+    return image_label['label']
         
 class SSearch():
     def __init__(self, configfile, model, size = 1000):
@@ -70,8 +72,10 @@ class SSearch():
             
         ds_test = ds['test']
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
-        self.data = ds_test[0].numpy()
-        self.labels = ds_test[1].numpy()
+        ds_labels = ds_test.map(map_label_func)
+        
+        self.data = ds_test.numpy()
+        self.labels = ds_labels.numpy()
 #         ds_test = ds_test.shuffle(1024).batch(self.size)
 #         ds_test = ds_test.take(1)       
 #         for sample in ds_test :
