@@ -86,6 +86,7 @@ class SSearch():
         print(labels.shape)
         labels = np.repeat(labels, labels_ranking.shape[1] - 1, axis = 1)
         pos_all_queries = np.where(labels == labels_ranking[:, 1:])
+        print(pos_all_queries)
         n_queries = labels_ranking.shape[0]
         AP = 0
         for pos_query in pos_all_queries :
