@@ -22,6 +22,8 @@ import skimage.io as io
 import argparse
 #---------- dataset builder --------------------  
 
+SAVE_SAMPLE_RESULTS = False
+
 def ssl_map_func(image_label, crop_size):
     image = image_label['image']
     label = image_label['label']    
@@ -78,7 +80,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.shuffle(1024).batch(1024).take(1)
+        self.ds_data = ds_test.shuffle(1024).batch(1024).take(10)
         #ds_test = ds_test.take(1)               
               
     
@@ -166,17 +168,19 @@ if __name__ == '__main__' :
             ssearch.compute_sim()
             mAP  = ssearch.compute_map()
             print('mAP \t = {}'.format(mAP))
-            print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
-#           idxs = np.random.randint(datasize, size = 10)
-#             dataset_name = ssearch.get_dataset_name()
-#             result_dir = os.path.join('results', dataset_name, ssl_model_name)
-#             if not os.path.exists(result_dir) :
-#                 os.makedirs(result_dir)
-#                  
-#             for idx in idxs :
-#                 rimage =  ssearch.visualize(idx)
-#                 fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
-#                 fname = os.path.join(result_dir,fname)
-#                 io.imsave(fname, rimage)
-#                 print('result saved at {}'.format(fname))
+            datasize = ssearch.get_dataset_size()
+            print('dataset size \t = {}'.format(datasize))
+            if SAVE_SAMPLE_RESULTS :       
+                idxs = np.random.randint(datasize, size = 10)
+                dataset_name = ssearch.get_dataset_name()
+                result_dir = os.path.join('results', dataset_name, ssl_model_name)
+                if not os.path.exists(result_dir) :
+                    os.makedirs(result_dir)
+                        
+                for idx in idxs :
+                    rimage =  ssearch.visualize(idx)
+                    fname = 'result_{}_{}_{}.png'.format(dataset_name, ssl_model_name, idx)
+                    fname = os.path.join(result_dir,fname)
+                    io.imsave(fname, rimage)
+                    print('result saved at {}'.format(fname))
      
