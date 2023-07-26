@@ -115,13 +115,13 @@ class SSearch():
         for batch in self.ds_data :          
             images = batch[0].numpy()
             print(images)
-            labels = batch[1].numpy()
-            print(labels)    
+            labels = batch[1].numpy()                
             feats = self.model.predict(images)
             self.features.append(feats)            
             self.labels.append(labels)
         self.features = np.array(self.features)
         self.labels = np.array(self.labels)
+        self.labels = np.reshape(self.labels, (-1,))
     
     def compute_sim(self):        
         feats = self.features
