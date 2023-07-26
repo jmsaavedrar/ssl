@@ -113,7 +113,7 @@ class SSearch():
             feats = self.model.predict(images)
             self.features = np.vstack([self.features, feats]) if self.features.size else feats
             self.labels = np.vstack([self.labels, labels]) if self.labels.size else labels
-        self.labels = np.reshape(self.labels, (1,))
+        self.labels = np.reshape(self.labels, (-1,))
         
     
     def compute_sim(self):        
