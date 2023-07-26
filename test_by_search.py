@@ -154,7 +154,7 @@ if __name__ == '__main__' :
     parser.add_argument('-config', type = str, required = True)    
     parser.add_argument('-model', type = str, required = True)
     parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
-    parser.add_argument('-save_sample', type = bool, required = False, default = False) # gpu = -1 set for using all gpus
+    parser.add_argument('-save_sample', type = bool, required = False, default = False, action=argparse.BooleanOptionalAction) # gpu = -1 set for using all gpus
     #datasize = 1000
     args = parser.parse_args()
     gpu_id = 0
