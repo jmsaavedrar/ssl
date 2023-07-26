@@ -78,7 +78,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.batch(1024).take(10)
+        self.ds_data = ds_test.batch(1024).take(1)
         #ds_test = ds_test.take(1)               
               
     
@@ -87,7 +87,7 @@ class SSearch():
         labels = np.reshape(self.labels, (-1, 1))
         print(labels.shape)                        
         AP = []
-        for i in np.arange(len(self.labels)) :
+        for i in np.arange(self.get_dataset_size()) :
             ranking = self.sorted_pos[i, 1:]                 
             pos_query = np.where(ranking == labels[i])[0]
             pos_query = pos_query + 1 
@@ -142,7 +142,7 @@ class SSearch():
         return self.config_data.get('DATASET')
     
     def get_dataset_size(self):
-        return len(self.ds_test)     
+        return len(self.labels)     
 
 if __name__ == '__main__' :
     parser = argparse.ArgumentParser()
