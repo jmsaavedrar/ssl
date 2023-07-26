@@ -70,6 +70,7 @@ class SSearch():
             
         ds_test = ds['test']
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
+        
 #         self.data = [] 
 #         self.labels = []
 #         for sample in ds_data :
@@ -77,7 +78,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.batch(1024)
+        self.ds_data = ds_test.batch(1024).take(1)
         #ds_test = ds_test.take(1)               
               
     
@@ -117,8 +118,8 @@ class SSearch():
             feats = self.model.predict(images)
             self.features.append(feats)
             self.labels.append(labels)
-        self.features = np.asanyarray(self.features)
-        self.labels = np.asanyarray(self.labels)
+        self.features = np.array(self.features)
+        self.labels = np.array(self.labels)
     
     def compute_sim(self):        
         feats = self.features
