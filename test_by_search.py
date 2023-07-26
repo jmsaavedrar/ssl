@@ -115,7 +115,7 @@ class SSearch():
             images = batch[0].numpy()
             labels = batch[1].numpy()    
             feats = self.model.predict(images)
-            self.feature.append(feats)
+            self.features.append(feats)
             self.labels.append(labels)
         self.features = np.asanyarray(self.features)
         self.labels = np.asanyarray(self.labels)
