@@ -70,13 +70,15 @@ class SSearch():
             
         ds_test = ds['test']
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
-        ds_test = ds_test.shuffle(1024).batch(self.size)
-        ds_test = ds_test.take(1)       
-        for sample in ds_test :
-            self.data = sample[0].numpy()
-            self.labels = sample[1].numpy()
-            print(self.data)
-            print(self.labels)
+        self.data = ds_test[0].numpy()
+        self.labels = ds_test[1].numpy()
+#         ds_test = ds_test.shuffle(1024).batch(self.size)
+#         ds_test = ds_test.take(1)       
+#         for sample in ds_test :
+#             self.data = sample[0].numpy()
+#             self.labels = sample[1].numpy()
+#             print(self.data)
+#             print(self.labels)
               
     
     def compute_map(self):
@@ -103,7 +105,7 @@ class SSearch():
                 AP.append(AP_q)
             print('{} -> mAP = {}'.format(len(pos_query), AP_q))
                          
-        mAP = np.mean(np.array(AP)) 
+        mAP = np.mean(np.array(AP))        
         return mAP
         
         return mAP
@@ -127,7 +129,10 @@ class SSearch():
        
 
     def get_dataset_name(self):
-        return self.config_data.get('DATASET')     
+        return self.config_data.get('DATASET')
+    
+    def get_dataset_size(self):
+        return self.data.shape[0]     
 
 if __name__ == '__main__' :
     parser = argparse.ArgumentParser()
@@ -149,8 +154,9 @@ if __name__ == '__main__' :
             ssearch.load_data()
             ssearch.compute_features()
             mAP  = ssearch.compute_map()
-            print('mAP = {}'.format(mAP))       
-#             idxs = np.random.randint(datasize, size = 10)
+            print('mAP \t = {}'.format(mAP))
+            print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
+#           idxs = np.random.randint(datasize, size = 10)
 #             dataset_name = ssearch.get_dataset_name()
 #             result_dir = os.path.join('results', dataset_name, ssl_model_name)
 #             if not os.path.exists(result_dir) :
