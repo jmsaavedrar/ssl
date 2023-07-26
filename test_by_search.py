@@ -114,9 +114,11 @@ class SSearch():
         self.labels = []
         for batch in self.ds_data :          
             images = batch[0].numpy()
-            labels = batch[1].numpy()    
+            print(images)
+            labels = batch[1].numpy()
+            print(labels)    
             feats = self.model.predict(images)
-            self.features.append(feats)
+            self.features.append(feats)            
             self.labels.append(labels)
         self.features = np.array(self.features)
         self.labels = np.array(self.labels)
