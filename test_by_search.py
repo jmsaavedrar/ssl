@@ -108,7 +108,7 @@ class SSearch():
         mAP = np.mean(np.array(AP))        
         return mAP
         
-        return mAP
+        
     def compute_features(self):
         self.features = []
         self.labels = []
@@ -119,9 +119,10 @@ class SSearch():
             feats = self.model.predict(images)
             self.features.append(feats)            
             self.labels.append(labels)
-        self.features = np.array(self.features)
-        self.labels = np.array(self.labels)
-        self.labels = np.reshape(self.labels, (-1,))
+            
+        self.features = np.squeeze(np.array(self.features), axis = 0)                
+        self.labels = np.squeeze(np.array(self.labels), axis = 0)
+        
     
     def compute_sim(self):        
         feats = self.features
