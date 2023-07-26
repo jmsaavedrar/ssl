@@ -41,13 +41,12 @@ def imagenet_map_func(image_label, crop_size):
 
         
 class SSearch():
-    def __init__(self, configfile, model, size = 1000):
+    def __init__(self, configfile, model):
         config = configparser.ConfigParser()
         config.read(configfile)
         self.config_model = config[model]
         self.config_data = config['DATA']
         self.model = None 
-        self.size = size       
         if  model  == 'SIMSIAM' :
             ssl_model = simsiam.SketchSimSiam(self.config_data, self.config_model)                                            
             ssl_model.load_weights(self.config_model.get('CKP_FILE'))            
@@ -70,26 +69,19 @@ class SSearch():
             fn = imagenet_map_func    
             
         ds_test = ds['test']
-        ds_data = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
-        
-        self.data = [] 
-        self.labels = []
-        for sample in ds_data :
-            self.data.append(sample[0].numpy())
-            self.labels.append(sample[1].numpy())
-        self.data = np.array(self.data)
-        self.labels = np.array(self.labels)
-#         ds_test = ds_test.shuffle(1024).batch(self.size)
-#         ds_test = ds_test.take(1)       
-#         for sample in ds_test :
-#             self.data = sample[0].numpy()
-#             self.labels = sample[1].numpy()
-#             print(self.data)
-#             print(self.labels)
+        ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
+#         self.data = [] 
+#         self.labels = []
+#         for sample in ds_data :
+#             self.data.append(sample[0].numpy())
+#             self.labels.append(sample[1].numpy())
+#         self.data = np.array(self.data)
+#         self.labels = np.array(self.labels)
+        self.ds_data = ds_test.batch(self.config_model.get('BATCH_SIZE'))
+        #ds_test = ds_test.take(1)               
               
     
-    def compute_map(self):
-         
+    def compute_map(self):         
         labels_ranking = self.labels[self.sorted_pos]
         labels_ranking = labels_ranking[:, 1:] 
         print(labels_ranking.shape)
@@ -117,7 +109,19 @@ class SSearch():
         
         return mAP
     def compute_features(self):
-        feats = self.model.predict(self.data)        
+        self.features = []
+        self.labels = []
+        for batch in self.ds_data :          
+            images = batch[0].numpy
+            labels = batch[1].numpy      
+            feats = self.model.predict(images)
+            self.feature.append(feats)
+            self.labels.append(labels)
+        self.features = np.asanyarray(self.features)
+        self.labels = np.asanyarray(self.labels)
+    
+    def compute_sim(self):        
+        feats = self.feats
         norm = np.linalg.norm(feats, ord = 2, axis = 1, keepdims = True)
         feats = feats / norm
         sim = np.matmul(feats, np.transpose(feats))
@@ -160,6 +164,7 @@ if __name__ == '__main__' :
             ssearch = SSearch(config_file, ssl_model_name, size = datasize)
             ssearch.load_data()
             ssearch.compute_features()
+            ssearch.compute_sim()
             mAP  = ssearch.compute_map()
             print('mAP \t = {}'.format(mAP))
             print('dataset size \t = {}'.format(ssearch.get_dataset_size()))       
