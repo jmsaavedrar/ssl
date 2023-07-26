@@ -72,7 +72,7 @@ class SSearch():
             
         ds_test = ds['test']
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
-        ds_labels = ds_test.map(map_label_func)
+        ds_labels = ds_test.map(lambda image_label: map_label_func(image_label))
         
         self.data = ds_test.numpy()
         self.labels = ds_labels.numpy()
