@@ -22,7 +22,7 @@ import skimage.io as io
 import argparse
 #---------- dataset builder --------------------  
 
-SAVE_SAMPLE_RESULTS = False
+#set seed for experimental replication
 tf.random.set_seed(1234)
 
 
