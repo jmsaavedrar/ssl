@@ -23,6 +23,8 @@ import argparse
 #---------- dataset builder --------------------  
 
 SAVE_SAMPLE_RESULTS = False
+tf.random.set_seed(1234)
+
 
 def ssl_map_func(image_label, crop_size):
     image = image_label['image']
