@@ -84,14 +84,12 @@ class SSearch():
         #ds_test = ds_test.take(1)               
               
     
-    def compute_map(self):                  
-        
-        labels = np.reshape(self.labels, (-1, 1))
-        print(labels.shape)                        
+    def compute_map(self):                                         
+        print(self.labels.shape)                        
         AP = []
         for i in np.arange(self.get_dataset_size()) :
             ranking = self.labels[self.sorted_pos[i, 1:]]                 
-            pos_query = np.where(ranking == labels[i])[0]
+            pos_query = np.where(ranking == self.labels[i])[0]
             pos_query = pos_query + 1 
             if len(pos_query) == 0 :
                 AP_q = 0
@@ -115,7 +113,7 @@ class SSearch():
             feats = self.model.predict(images)
             self.features = np.vstack([self.features, feats]) if self.features.size else feats
             self.labels = np.vstack([self.labels, labels]) if self.labels.size else labels
-        
+        self.labels = np.reshape(self.labels, (1,))
         
     
     def compute_sim(self):        
