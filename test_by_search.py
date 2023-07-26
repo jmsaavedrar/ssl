@@ -110,19 +110,15 @@ class SSearch():
         
         
     def compute_features(self):
-        self.features = []
-        self.labels = []
+        self.features = np.array([])
+        self.labels = np.array([])
         for batch in self.ds_data :          
             images = batch[0].numpy()            
             labels = batch[1].numpy()                
             feats = self.model.predict(images)
-            self.features.append(feats)            
-            self.labels.append(labels)
-        self.features = np.array(self.features)     
-        print(self.features.shape)
-        print(self.labels.shape)    
-        self.features = np.squeeze(self.features, axis = 0)                
-        self.labels = np.squeeze(np.array(self.labels), axis = 0)
+            self.features = np.vstack(self.features, feats)
+            self.labels = np.vstack(self.labels, labels) 
+        
         
     
     def compute_sim(self):        
