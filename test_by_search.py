@@ -77,7 +77,7 @@ class SSearch():
 #             self.labels.append(sample[1].numpy())
 #         self.data = np.array(self.data)
 #         self.labels = np.array(self.labels)
-        self.ds_data = ds_test.batch(self.config_model.getint('BATCH_SIZE'))
+        self.ds_data = ds_test.batch(1024)
         #ds_test = ds_test.take(1)               
               
     
@@ -121,7 +121,7 @@ class SSearch():
         self.labels = np.asanyarray(self.labels)
     
     def compute_sim(self):        
-        feats = self.feats
+        feats = self.features
         norm = np.linalg.norm(feats, ord = 2, axis = 1, keepdims = True)
         feats = feats / norm
         sim = np.matmul(feats, np.transpose(feats))
