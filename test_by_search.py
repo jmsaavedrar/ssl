@@ -118,9 +118,10 @@ class SSearch():
             feats = self.model.predict(images)
             self.features.append(feats)            
             self.labels.append(labels)
+        self.features = np.array(self.features)     
         print(self.features.shape)
         print(self.labels.shape)    
-        self.features = np.squeeze(np.array(self.features), axis = 0)                
+        self.features = np.squeeze(self.features, axis = 0)                
         self.labels = np.squeeze(np.array(self.labels), axis = 0)
         
     
