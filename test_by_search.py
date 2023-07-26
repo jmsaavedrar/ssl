@@ -82,19 +82,14 @@ class SSearch():
         #ds_test = ds_test.take(1)               
               
     
-    def compute_map(self):         
-        labels_ranking = self.labels[self.sorted_pos]
-        labels_ranking = labels_ranking[:, 1:] 
-        print(labels_ranking.shape)
+    def compute_map(self):                  
+        
         labels = np.reshape(self.labels, (-1, 1))
-        print(labels.shape)
-        labels = np.repeat(labels, labels_ranking.shape[1], axis = 1)
-        print(labels.shape)
-        print(labels_ranking.shape)        
-        n_queries = labels_ranking.shape[0]
+        print(labels.shape)                        
         AP = []
-        for i in np.arange(n_queries) :            
-            pos_query = np.where(labels_ranking[i, :] == labels[i])[0]
+        for i in np.arange(len(self.labels)) :
+            ranking = self.sorted_pos[i, 1:]                 
+            pos_query = np.where(ranking == labels[i])[0]
             pos_query = pos_query + 1 
             if len(pos_query) == 0 :
                 AP_q = 0
