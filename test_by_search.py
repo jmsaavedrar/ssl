@@ -71,10 +71,10 @@ class SSearch():
             fn = imagenet_map_func    
             
         ds_test = ds['test']
-        ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
+        ds_images = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
         ds_labels = ds_test.map(lambda image_label: map_label_func(image_label))
         
-        self.data = ds_test.numpy()
+        self.data = ds_images.numpy()
         self.labels = ds_labels.numpy()
 #         ds_test = ds_test.shuffle(1024).batch(self.size)
 #         ds_test = ds_test.take(1)       
