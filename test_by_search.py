@@ -74,8 +74,8 @@ class SSearch():
         ds_images = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
         ds_labels = ds_test.map(lambda image_label: map_label_func(image_label))
         print(ds_labels)
-        self.data = ds_images.numpy()
-        self.labels = ds_labels.numpy()
+        self.data = ds_images
+        self.labels = ds_labels
 #         ds_test = ds_test.shuffle(1024).batch(self.size)
 #         ds_test = ds_test.take(1)       
 #         for sample in ds_test :
