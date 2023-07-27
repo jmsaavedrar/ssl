@@ -73,24 +73,17 @@ class SSearch():
             fn = imagenet_map_func    
             
         ds_test = ds['test']
-        ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))
-        
-#         self.data = [] 
-#         self.labels = []
-#         for sample in ds_data :
-#             self.data.append(sample[0].numpy())
-#             self.labels.append(sample[1].numpy())
-#         self.data = np.array(self.data)
-#         self.labels = np.array(self.labels)
+        ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))        
         self.ds_data = ds_test.shuffle(1024).batch(1024).take(2)
-        #ds_test = ds_test.take(1)               
+        
               
     
-    def compute_map(self):                                         
+    def compute_map(self, n_retrieved = -1):                                         
         print(self.labels.shape)                        
         AP = []
+        sorted_pos_limited = self.sorted_pos[:, 1:] if n_retrieved == -1 else self.sorted_pos[:, 1:n_retrieved + 1] 
         for i in np.arange(self.get_dataset_size()) :
-            ranking = self.labels[self.sorted_pos[i, 1:]]                 
+            ranking = self.labels[sorted_pos_limited[i,:]]                 
             pos_query = np.where(ranking == self.labels[i])[0]
             pos_query = pos_query + 1 
             if len(pos_query) == 0 :
@@ -172,7 +165,7 @@ if __name__ == '__main__' :
             ssearch.load_data()
             ssearch.compute_features()
             ssearch.compute_sim()
-            mAP  = ssearch.compute_map()
+            mAP  = ssearch.compute_map(n_retrieved = 5)
             print('mAP \t = {}'.format(mAP))
             datasize = ssearch.get_dataset_size()
             print('dataset size \t = {}'.format(datasize))
