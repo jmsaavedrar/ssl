@@ -92,7 +92,7 @@ class SSearch():
                 recall = np.arange(1, len(pos_query) + 1)
                 pr = recall / pos_query
                 AP_q = np.mean(pr)
-                AP.append(AP_q)
+            AP.append(AP_q)
             print('{} -> mAP = {}'.format(len(pos_query), AP_q))
                          
         mAP = np.mean(np.array(AP))        
