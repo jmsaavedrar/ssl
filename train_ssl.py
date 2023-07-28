@@ -109,7 +109,7 @@ if __name__ == '__main__':
     #
     dataset_name = config_data.get('DATASET')
     if dataset_name == 'QD' :        
-        ds = tfds.load('tfds_qd')
+        ds = tfds.load('tfds_qdssl')
     if dataset_name == 'IMAGENET' :        
         #data_dir ='/mnt/hd-data/Datasets/imagenet/tfds'            
         #ds = tfds.load('imagenet1k', data_dir = data_dir)

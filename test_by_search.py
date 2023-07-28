@@ -62,17 +62,17 @@ class SSearch():
         assert not (self.model == None), '-- there is not a ssl model'
         print('Model loaded OK', flush = True)            
 
-    def load_data(self):
+    def load_data(self, data_name='test'):
         ds = None
         fn = None
         if self.config_data.get('DATASET') == 'QD' :       
-            ds = tfds.load('tfds_qd')
+            ds = tfds.load('tfds_qdssl')
             fn = ssl_map_func
         if self.config_data.get('DATASET') == 'IMAGENET' :       
             ds = tfds.load('imagenet1k')
             fn = imagenet_map_func    
             
-        ds_test = ds['test']
+        ds_test = ds[data_name]
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))        
         self.ds_data = ds_test.shuffle(1024).batch(1024).take(2)
         
@@ -150,11 +150,16 @@ if __name__ == '__main__' :
     parser.add_argument('-model', type = str, required = True)
     parser.add_argument('-gpu', type = int, required = False) # gpu = -1 set for using all gpus
     parser.add_argument('-save_sample', type = bool, required = False, default = False, action=argparse.BooleanOptionalAction) # gpu = -1 set for using all gpus
+    parser.add_argument('-data_name', type = str, required = False, default = 'test') # the name of the testing data ej. test, test_known, test_unknown
     #datasize = 1000
     args = parser.parse_args()
     gpu_id = 0
+    data_name = 'test'    
     if not args.gpu is None :
         gpu_id = args.gpu
+    if not args.data_name is None :
+        data_name = args.data_name
+        
     config_file = args.config
     ssl_model_name = args.model
     assert os.path.exists(config_file), '{} does not exist'.format(config_file)        
@@ -162,7 +167,7 @@ if __name__ == '__main__' :
     if gpu_id >= 0 :
         with tf.device('/device:GPU:{}'.format(gpu_id)) :
             ssearch = SSearch(config_file, ssl_model_name)
-            ssearch.load_data()
+            ssearch.load_data(data_name)
             ssearch.compute_features()
             ssearch.compute_sim()
             mAP  = ssearch.compute_map(n_retrieved = 5)
