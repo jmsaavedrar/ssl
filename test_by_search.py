@@ -102,15 +102,15 @@ class SSearch():
     def compute_features(self):
         self.features = np.array([])
         self.labels = np.array([])
-        self.images = np.array([])
+        #self.images = np.array([])
         for batch in self.ds_data :          
             images = batch[0].numpy()            
             labels = batch[1].numpy()                
             feats = self.model.predict(images)
-            imgs = np.array([np.resize(im, (32,32)) for im in images])
+          #  imgs = np.array([np.resize(im, (32,32)) for im in images])
             self.features = np.vstack([self.features, feats]) if self.features.size else feats
             self.labels = np.vstack([self.labels, labels]) if self.labels.size else labels
-            self.images= np.vstack([self.images, imgs]) if self.images.size else imgs
+         #   self.images= np.vstack([self.images, imgs]) if self.images.size else imgs
         self.labels = np.reshape(self.labels, (-1,))
         
     
