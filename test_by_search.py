@@ -107,9 +107,10 @@ class SSearch():
             images = batch[0].numpy()            
             labels = batch[1].numpy()                
             feats = self.model.predict(images)
+            imgs = np.array([np.resize(im, (32,32)) for im in images])
             self.features = np.vstack([self.features, feats]) if self.features.size else feats
             self.labels = np.vstack([self.labels, labels]) if self.labels.size else labels
-            self.images= np.vstack([self.images, images]) if self.images.size else images
+            self.images= np.vstack([self.images, imgs]) if self.images.size else imgs
         self.labels = np.reshape(self.labels, (-1,))
         
     
