@@ -82,7 +82,7 @@ class SSearch():
         print(self.labels.shape)                        
         AP = []
         sorted_pos_limited = self.sorted_pos[:, 1:] if n_retrieved == -1 else self.sorted_pos[:, 1:n_retrieved + 1] 
-        for i in np.arange(self.get_dataset_size()) :
+        for i in np.arange(self.sorted_pos_limited.shape[0]) :
             ranking = self.labels[sorted_pos_limited[i,:]]                 
             pos_query = np.where(ranking == self.labels[i])[0]
             pos_query = pos_query + 1 
