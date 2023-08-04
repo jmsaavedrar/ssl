@@ -84,7 +84,7 @@ class SSearch():
         else :
             sim_sample = self.sim[np.random.choice(np.arange(self.sim.shape[0]), size = n_queries), :]
         sorted_pos = np.argsort(-sim_sample, axis = 1)
-        print(self.sorted_pos.shape)                                         
+        print(sorted_pos.shape)                                         
         print(self.labels.shape)                        
         AP = []
         sorted_pos_limited = sorted_pos[:, 1:] if n_retrieved == -1 else sorted_pos[:, 1:n_retrieved + 1] 
