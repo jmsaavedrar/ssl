@@ -107,21 +107,24 @@ class SSearch():
             images = batch[0].numpy()            
             labels = batch[1].numpy()                
             feats = self.model.predict(images)
-          #  imgs = np.array([np.resize(im, (32,32)) for im in images])
+            # imgs = np.array([np.resize(im, (32,32)) for im in images])
             self.features = np.vstack([self.features, feats]) if self.features.size else feats
             self.labels = np.vstack([self.labels, labels]) if self.labels.size else labels
-         #   self.images= np.vstack([self.images, imgs]) if self.images.size else imgs
+            # self.images= np.vstack([self.images, imgs]) if self.images.size else imgs
         self.labels = np.reshape(self.labels, (-1,))
         
     
-    def compute_sim(self):        
+    def compute_sim(self, n_queries = -1):        
         feats = self.features
         print(feats.shape)
         norm = np.linalg.norm(feats, ord = 2, axis = 1, keepdims = True)
         feats = feats / norm
         sim = np.matmul(feats, np.transpose(feats))
         print(sim.shape)
-        sim_sample = sim[np.random.choice(np.arange(sim.shape[0]), size = 1000), :]
+        if n_queries == -1 :
+            sim_sample = sim 
+        else :
+            sim_sample = sim[np.random.choice(np.arange(sim.shape[0]), size = n_queries), :]
         self.sorted_pos = np.argsort(-sim_sample, axis = 1)
         print(self.sorted_pos.shape)
          
@@ -171,8 +174,8 @@ if __name__ == '__main__' :
             ssearch = SSearch(config_file, ssl_model_name)
             ssearch.load_data(data_name)
             ssearch.compute_features()
-            ssearch.compute_sim()
-            mAP  = ssearch.compute_map(n_retrieved = 5)
+            ssearch.compute_sim(n_queries = 1000 )
+            mAP  = ssearch.compute_map(n_retrieved = 100)
             print('mAP \t = {}'.format(mAP))
             datasize = ssearch.get_dataset_size()
             print('dataset size \t = {}'.format(datasize))
