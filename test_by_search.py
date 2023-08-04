@@ -121,7 +121,8 @@ class SSearch():
         feats = feats / norm
         sim = np.matmul(feats, np.transpose(feats))
         print(sim.shape)
-        self.sorted_pos = np.argsort(-sim, axis = 1)
+        sim_sample = sim[np.random.choice(np.arange(sim.shape[0]), size = 1000), :]
+        self.sorted_pos = np.argsort(-sim_sample, axis = 1)
         print(self.sorted_pos.shape)
          
 
