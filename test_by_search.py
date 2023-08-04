@@ -74,7 +74,7 @@ class SSearch():
             
         ds_test = ds[data_name]
         ds_test = ds_test.map(lambda image : fn(image, self.config_data.getint('CROP_SIZE') ))        
-        self.ds_data = ds_test.shuffle(1024).batch(1024)
+        self.ds_data = ds_test.shuffle(1024).batch(1024).take(32)
         
               
     
