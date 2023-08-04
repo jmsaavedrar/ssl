@@ -78,10 +78,16 @@ class SSearch():
         
               
     
-    def compute_map(self, n_retrieved = -1):                                         
+    def compute_map(self, n_queries = -1, n_retrieved = -1):
+        if n_queries == -1 :
+            sim_sample = self.sim 
+        else :
+            sim_sample = self.sim[np.random.choice(np.arange(self.sim.shape[0]), size = n_queries), :]
+        sorted_pos = np.argsort(-sim_sample, axis = 1)
+        print(self.sorted_pos.shape)                                         
         print(self.labels.shape)                        
         AP = []
-        sorted_pos_limited = self.sorted_pos[:, 1:] if n_retrieved == -1 else self.sorted_pos[:, 1:n_retrieved + 1] 
+        sorted_pos_limited = sorted_pos[:, 1:] if n_retrieved == -1 else sorted_pos[:, 1:n_retrieved + 1] 
         for i in np.arange(sorted_pos_limited.shape[0]) :
             ranking = self.labels[sorted_pos_limited[i,:]]                 
             pos_query = np.where(ranking == self.labels[i])[0]
@@ -93,7 +99,7 @@ class SSearch():
                 pr = recall / pos_query
                 AP_q = np.mean(pr)
             AP.append(AP_q)
-            print('{} -> mAP = {}'.format(len(pos_query), AP_q))
+            #print('{} -> mAP = {}'.format(len(pos_query), AP_q))
                          
         mAP = np.mean(np.array(AP))        
         return mAP
@@ -114,19 +120,14 @@ class SSearch():
         self.labels = np.reshape(self.labels, (-1,))
         
     
-    def compute_sim(self, n_queries = -1):        
+    def compute_sim(self):        
         feats = self.features
         print(feats.shape)
         norm = np.linalg.norm(feats, ord = 2, axis = 1, keepdims = True)
         feats = feats / norm
-        sim = np.matmul(feats, np.transpose(feats))
-        print(sim.shape)
-        if n_queries == -1 :
-            sim_sample = sim 
-        else :
-            sim_sample = sim[np.random.choice(np.arange(sim.shape[0]), size = n_queries), :]
-        self.sorted_pos = np.argsort(-sim_sample, axis = 1)
-        print(self.sorted_pos.shape)
+        self.sim = np.matmul(feats, np.transpose(feats))
+        
+        
          
 
 
@@ -174,9 +175,10 @@ if __name__ == '__main__' :
             ssearch = SSearch(config_file, ssl_model_name)
             ssearch.load_data(data_name)
             ssearch.compute_features()
-            ssearch.compute_sim(n_queries = 1000 )
-            mAP  = ssearch.compute_map(n_retrieved = 100)
-            print('mAP \t = {}'.format(mAP))
+            ssearch.compute_sim()
+            for _ in np.arange(10) :
+                mAP  = ssearch.compute_map(n_queries = 1000, n_retrieved = 1000)
+                print('mAP \t = {}'.format(mAP))
             datasize = ssearch.get_dataset_size()
             print('dataset size \t = {}'.format(datasize))
             if args.save_sample : 
